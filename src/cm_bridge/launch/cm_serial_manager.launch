@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="serial_port"/>
+
+    <node pkg="cm_bridge" name="cm_serial_manager" type="cm_serial_manager.py" output="screen">
+        <param name="serial_port" value="$(arg serial_port)"/>
+    </node>
+
+</launch>
