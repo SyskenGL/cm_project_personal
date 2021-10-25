@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 <launch>
 
-    <include file="$(find cm_bridge)/launch/cm_serial_manager.launch">
-        <arg name="serial_port" value=""/>
-    </include>
+    <arg name="serial_port" default="/dev/ttyS0"/>
+
+
+    <group ns="cm_bridge">
+
+        <include file="$(find cm_bridge)/launch/cm_serial_manager.launch">
+            <arg name="serial_port" value="$(arg serial_port)"/>
+        </include>
+
+    </group>
 
 </launch>
