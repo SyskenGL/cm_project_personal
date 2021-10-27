@@ -3,7 +3,7 @@
 
     <arg name="serial_port"/>
 
-    <node pkg="cm_bridge" name="cm_serial_manager" type="cm_serial_manager.py" output="screen">
+    <node pkg="cm_bridge" name="cm_api_manager" type="cm_api_manager.py">
         <param name="serial_port" value="$(arg serial_port)"/>
     </node>
 
