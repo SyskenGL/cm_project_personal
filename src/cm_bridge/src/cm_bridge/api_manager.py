@@ -64,8 +64,7 @@ class CMAPIManager(CMNode):
         if (self.__serial is not None) and self.__serial.isOpen():
             self.__serial.close()
 
-    def __listen(self):
-        # Listen on the serial port then publish on the topic
+    def __listen_serial(self):
         while not rospy.is_shutdown():
             out = self.__serial.readline()
             if out and not rospy.is_shutdown():
@@ -98,5 +97,5 @@ class CMAPIManager(CMNode):
 
     def run(self):
         self.__call_api_server.start()
-        self.__listen()
+        self.__listen_serial()
         self.__unsubscribe()
