@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+    <group ns="cm_bridge">
+
+        <arg name="serial_port" default="/dev/ttyS0"/>
+        <arg name="baud_rate" default="115200"/>
+        <arg name="read_timeout" default="1"/>
+        <arg name="write_timeout" default="1"/>
+
+        <include file="$(find cm_bridge)/launch/cm_api_manager.launch">
+            <arg name="serial_port" value="$(arg serial_port)"/>
+            <arg name="baud_rate" value="$(arg baud_rate)"/>
+            <arg name="read_timeout" value="$(arg read_timeout)"/>
+            <arg name="write_timeout" value="$(arg write_timeout)"/>
+        </include>
+
+    </group>
+
+</launch>

@@ -2,7 +2,7 @@
 string request
 ---
 # Result
-string response
+uint16 id
 ---
 # Feedback
 # Empty

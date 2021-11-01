@@ -3,12 +3,14 @@
 
     <arg name="serial_port"/>
     <arg name="baud_rate"/>
-    <arg name="timeout"/>
+    <arg name="read_timeout"/>
+    <arg name="write_timeout"/>
 
     <node pkg="cm_bridge" name="cm_api_manager" type="cm_api_manager.py" required="true" output="screen">
         <param name="serial_port" value="$(arg serial_port)"/>
         <param name="baud_rate" value="$(arg baud_rate)"/>
-        <param name="timeout" value="$(arg timeout)"/>
+        <param name="read_timeout" value="$(arg read_timeout)"/>
+        <param name="write_timeout" value="$(arg write_timeout)"/>
     </node>
 
 </launch>
