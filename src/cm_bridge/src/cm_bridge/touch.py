@@ -2,10 +2,8 @@
 from cm_ros.wrapper import CMNode
 
 
-class CMLEDs(CMNode):
+class CMTouch(CMNode):
 
-    def __init__(self, name='cm_leds'):
+    def __init__(self, name='cm_touch'):
         CMNode.__init__(self, name)
 
-    def run(self):
-        pass

@@ -28,7 +28,7 @@ class CMAPIManager(CMNode):
         self.__api_call_id = -1
 
         # Initialize Action Server used to call API
-        self.__call_api_srv = actionlib.SimpleActionServer(
+        self.__call_api_server = actionlib.SimpleActionServer(
             rospy.get_name(),
             CallAPIAction,
             execute_cb=self.__on_api_call_received,
@@ -92,11 +92,11 @@ class CMAPIManager(CMNode):
         # Submit the result
         result = CallAPIResult(id=api_call_id)
         if succeed:
-            self.__call_api_srv.set_succeeded(result)
+            self.__call_api_server.set_succeeded(result)
         else:
-            self.__call_api_srv.set_aborted(result)
+            self.__call_api_server.set_aborted(result)
 
     def run(self):
-        self.__call_api_srv.start()
+        self.__call_api_server.start()
         self.__listen()
         self.__unsubscribe()
