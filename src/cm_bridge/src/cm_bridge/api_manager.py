@@ -14,7 +14,7 @@ class CMAPIManager(CMNode):
         CMNode.__init__(self, name)
 
         # Set initial configurations
-        self.config = defaultdict(lambda: None)
+        self.__config = defaultdict(lambda: None)
         self.__init_config()
 
         # Serial Stream
@@ -22,10 +22,10 @@ class CMAPIManager(CMNode):
         self.__subscribe()
 
         # ROS Topic used to publish serial output
-        self.__pub_serial = rospy.Publisher('~serial', String, queue_size=5)
+        self.__pub_serial = rospy.Publisher('~serial', String, queue_size=5, latch=True)
 
         # Unique ID of call request
-        self.__api_call_id = -1
+        self.__api_call_id = 0
 
         # Initialize Action Server used to call API
         self.__call_api_server = actionlib.SimpleActionServer(
@@ -37,24 +37,24 @@ class CMAPIManager(CMNode):
 
     def __init_config(self):
         # Serial port used to communicate with the robot
-        self.config['serial_port'] = rospy.get_param('~serial_port')
+        self.__config['serial_port'] = rospy.get_param('~serial_port')
 
         # Number of symbols transmitted in one second
-        self.config['baud_rate'] = rospy.get_param('~baud_rate')
+        self.__config['baud_rate'] = rospy.get_param('~baud_rate')
 
         # Maximum time that each call to read will wait.
-        self.config['read_timeout'] = rospy.get_param('~read_timeout')
+        self.__config['read_timeout'] = rospy.get_param('~read_timeout')
 
         # Maximum time that each call to write will wait.
-        self.config['write_timeout'] = rospy.get_param('~write_timeout')
+        self.__config['write_timeout'] = rospy.get_param('~write_timeout')
 
     def __subscribe(self):
         try:
             self.__serial = serial.Serial(
-                self.config['serial_port'],
-                self.config['baud_rate'],
-                timeout=self.config['read_timeout'],
-                write_timeout=self.config['write_timeout']
+                self.__config['serial_port'],
+                self.__config['baud_rate'],
+                timeout=self.__config['read_timeout'],
+                write_timeout=self.__config['write_timeout']
             )
         except serial.SerialException as err:
             rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
@@ -71,7 +71,7 @@ class CMAPIManager(CMNode):
                 self.__pub_serial.publish(out)
 
     def __get_api_call_id(self):
-        self.__api_call_id = (self.__api_call_id + 1) % 65536
+        self.__api_call_id = (self.__api_call_id % 65535) + 1
         return self.__api_call_id
 
     def __on_api_call_received(self, goal):
@@ -79,7 +79,7 @@ class CMAPIManager(CMNode):
 
         # Complete the request by adding the call api ID
         api_call_id = self.__get_api_call_id()
-        goal.request += '[{id}|\n'.format(id=api_call_id)
+        goal.request.format(id=api_call_id)
 
         # Write on serial port
         try:
@@ -96,6 +96,19 @@ class CMAPIManager(CMNode):
             self.__call_api_server.set_aborted(result)
 
     def run(self):
+        # Get initial status
+        try:
+            status_command = '#R:1[{id}|\n'.format(id=self.__api_call_id)
+            self.__serial.write(bytes(status_command, 'utf-8'))
+        except serial.SerialTimeoutException as err:
+            rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
+            raise err
+
+        # Start the action server
         self.__call_api_server.start()
+
+        # Listen on the serial port
         self.__listen_serial()
+
+        # Close the serial port
         self.__unsubscribe()
