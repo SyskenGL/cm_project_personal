@@ -1,0 +1,10 @@
+# Goal
+LEDsStatus desired_leds_status
+bool ignore_flash
+bool ignore_lt_led
+bool ignore_rt_led
+---
+# Result
+LEDsStatus current_leds_status
+---
+# Feedback

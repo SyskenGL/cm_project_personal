@@ -23,6 +23,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  Flash.msg
+  LED.msg
+  LEDsStatus.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -36,6 +39,7 @@ add_message_files(
 add_action_files(
   FILES
   CallAPI.action
+  SetLEDs.action
 )
 
 ## Generate added messages and services with any dependencies listed here
