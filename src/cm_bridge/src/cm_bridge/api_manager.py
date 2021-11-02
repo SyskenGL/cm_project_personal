@@ -74,6 +74,14 @@ class CMAPIManager(CMNode):
         self.__api_call_id = (self.__api_call_id % 65535) + 1
         return self.__api_call_id
 
+    def __get_initial_status(self):
+        try:
+            status_command = '#R:1[{id}|\n'.format(id=self.__api_call_id)
+            self.__serial.write(bytes(status_command, 'utf-8'))
+        except serial.SerialTimeoutException as err:
+            rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
+            raise err
+
     def __on_api_call_received(self, goal):
         succeed = True
 
@@ -96,13 +104,8 @@ class CMAPIManager(CMNode):
             self.__call_api_server.set_aborted(result)
 
     def run(self):
-        # Get initial status
-        try:
-            status_command = '#R:1[{id}|\n'.format(id=self.__api_call_id)
-            self.__serial.write(bytes(status_command, 'utf-8'))
-        except serial.SerialTimeoutException as err:
-            rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
-            raise err
+        # Get current status
+        self.__get_initial_status()
 
         # Start the action server
         self.__call_api_server.start()
