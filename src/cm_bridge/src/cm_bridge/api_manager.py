@@ -68,7 +68,7 @@ class CMAPIManager(CMNode):
         while not rospy.is_shutdown():
             out = self.__serial.readline()
             if out and not rospy.is_shutdown():
-                self.__pub_serial.publish(out)
+                self.__pub_serial.publish(str(out, 'utf-8'))
 
     def __get_api_call_id(self):
         self.__api_call_id = (self.__api_call_id % 65535) + 1
@@ -76,7 +76,7 @@ class CMAPIManager(CMNode):
 
     def __get_initial_status(self):
         try:
-            status_command = '#R:1[{id}|\n'.format(id=self.__api_call_id)
+            status_command = '#R:[{id}|\n'.format(id=self.__api_call_id)
             self.__serial.write(bytes(status_command, 'utf-8'))
         except serial.SerialTimeoutException as err:
             rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
@@ -85,13 +85,12 @@ class CMAPIManager(CMNode):
     def __on_api_call_received(self, goal):
         succeed = True
 
-        # Complete the request by adding the call api ID
+        # Generate the call api ID
         api_call_id = self.__get_api_call_id()
-        goal.request.format(id=api_call_id)
 
         # Write on serial port
         try:
-            self.__serial.write(bytes(goal.request, 'utf-8'))
+            self.__serial.write(bytes(goal.request.format(id=api_call_id), 'utf-8'))
         except serial.SerialTimeoutException as err:
             rospy.logwarn('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
             succeed = False
