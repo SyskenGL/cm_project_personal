@@ -10,7 +10,7 @@ from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
 from cm_msgs.msg import TouchInfo, DisplayInfo, BarrierInfo, SoundInfo, MotorsInfo, LEDsInfo
 
 
-def compose_status_request():
+def pack_status_request():
     return '#R:[{id}|\n'
 
 
