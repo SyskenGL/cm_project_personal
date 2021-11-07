@@ -24,6 +24,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   TouchInfo.msg
+  IRInfo.msg
+  DisplayInfo.msg
+  SoundInfo.msg
+  MotorsInfo.msg
+  LEDsInfo.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -37,9 +42,6 @@ add_message_files(
 add_action_files(
   FILES
   WriteOnSerial.action
-  EnableTouch.action
-  EnableSound.action
-  EnableBarrier.action
 )
 
 ## Generate added messages and services with any dependencies listed here

@@ -1,0 +1,10 @@
+bool enabled
+bool auto_follow
+bool front
+bool rear
+bool right
+bool left
+bool front_right
+bool front_left
+bool rear_right
+bool rear_left

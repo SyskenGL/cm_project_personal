@@ -1,4 +1,4 @@
-bool touch_enabled
-bool lt_sensor
+bool enabled
+bool left_sensor
 bool up_sensor
-bool rt_sensor
+bool right_sensor
