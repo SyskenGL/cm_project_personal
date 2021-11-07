@@ -7,7 +7,7 @@ from std_msgs.msg import String
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
-from cm_msgs.msg import TouchInfo, DisplayInfo, IRInfo, SoundInfo, MotorsInfo, LEDsInfo
+from cm_msgs.msg import TouchInfo, DisplayInfo, BarrierInfo, SoundInfo, MotorsInfo, LEDsInfo
 
 
 def compose_status_request():
@@ -72,12 +72,12 @@ def unpack_sound_info(msg):
     return sound_info
 
 
-def unpack_ir_info(msg):
-    ir_info = None
+def unpack_barrier_info(msg):
+    barrier_info = None
     regex_result = re.search('O:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        ir_info = IRInfo(
+        barrier_info = BarrierInfo(
             enabled=bool(values[0]),
             front_distance=values[1],
             rear_distance=values[2],
@@ -85,7 +85,7 @@ def unpack_ir_info(msg):
             left_distance=values[4],
             violation=bool(values[5])
         )
-    return ir_info
+    return barrier_info
 
 
 def unpack_touch_info(msg):

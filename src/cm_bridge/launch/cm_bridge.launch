@@ -17,6 +17,10 @@
 
         <include file="$(find cm_bridge)/launch/cm_touch.launch"/>
 
+        <include file="$(find cm_bridge)/launch/cm_barrier.launch"/>
+
+        <include file="$(find cm_bridge)/launch/cm_sound.launch"/>
+
     </group>
 
 </launch>

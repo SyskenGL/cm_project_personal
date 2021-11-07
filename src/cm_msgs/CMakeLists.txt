@@ -24,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   TouchInfo.msg
-  IRInfo.msg
+  BarrierInfo.msg
   DisplayInfo.msg
   SoundInfo.msg
   MotorsInfo.msg
