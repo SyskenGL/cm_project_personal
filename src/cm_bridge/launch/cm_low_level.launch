@@ -6,7 +6,7 @@
     <arg name="read_timeout"/>
     <arg name="write_timeout"/>
 
-    <node pkg="cm_bridge" name="cm_api_manager" type="cm_api_manager.py" required="true" output="screen">
+    <node pkg="cm_bridge" name="cm_low_level" type="cm_low_level.py" required="true" output="screen">
         <param name="serial_port" value="$(arg serial_port)"/>
         <param name="baud_rate" value="$(arg baud_rate)"/>
         <param name="read_timeout" value="$(arg read_timeout)"/>

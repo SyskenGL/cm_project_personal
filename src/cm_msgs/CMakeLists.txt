@@ -23,8 +23,6 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Motor.msg
-  MotorsInfo.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -37,8 +35,7 @@ add_message_files(
 ## Generate actions in the 'action' folder
 add_action_files(
   FILES
-  CallAPI.action
-  Move.action
+  WriteOnSerial.action
 )
 
 ## Generate added messages and services with any dependencies listed here
