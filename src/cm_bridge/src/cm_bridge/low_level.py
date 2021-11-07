@@ -95,9 +95,9 @@ def unpack_touch_info(msg):
         values = [int(value) for value in regex_result.group(1).split(',')]
         touch_info = TouchInfo(
             enabled=bool(values[0]),
-            left_sensor=bool(values[1]),
-            up_sensor=bool(values[2]),
-            right_sensor=bool(values[3])
+            left=bool(values[1]),
+            up=bool(values[2]),
+            right=bool(values[3])
         )
     return touch_info
 

@@ -1,4 +1,4 @@
 bool enabled
-bool left_sensor
-bool up_sensor
-bool right_sensor
+bool left
+bool up
+bool right
