@@ -126,6 +126,8 @@ class CMLowLevel(CMNode):
         self.__pub_events = rospy.Publisher('~events', String, queue_size=5, latch=True)
         self.__pub_responses = rospy.Publisher('~responses', String, queue_size=5, latch=True)
 
+        self.__pub_events.publish('#M:0,0,0,0,0,0|L:0,0,0,0,0,0,0,0,0,0,0,0|S:1,1,1,0,0,0,0,0,1,1|O:1,1,0,0,0,0|T:1,1,0,0|V:1|')
+
         self.__write_on_serial_id = 0
         self.__serial_server = actionlib.SimpleActionServer(
             '~serial_server',
