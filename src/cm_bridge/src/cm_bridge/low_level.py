@@ -7,55 +7,78 @@ from std_msgs.msg import String
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
-from cm_msgs.msg import TouchInfo
+from cm_msgs.msg import TouchInfo, EnableTouchGoal, EnableBarrierGoal, EnableSoundGoal
 
 
 MSG_INFO = {
     'header': '#',
-    'body': {
-        'flags': {
-            'status': 'R',
-            'motors': 'M',
-            'leds': 'L',
-            'sound': 'S',
-            'ir': 'O',
-            'touch': 'T',
-            'display': 'V'
-        },
-        'flags_sep': '|',
-        'values_sep': ',',
+    'flags': {
+        'status': 'R',
+        'motors': 'M',
+        'leds': 'L',
+        'sound': 'S',
+        'ir': 'O',
+        'touch': 'T',
+        'display': 'V'
     },
+    'flags_sep': '|',
+    'values_sep': ',',
     'footer': '[{id}|\n'
 }
+REQUEST_STRUCT = '{header}{flag}:{content}{footer}'
 
 
 def compose_status_request():
-    request = '{header}{flag}:{footer}'
-    return request.format(
+    return REQUEST_STRUCT.format(
         header=MSG_INFO['header'],
-        flag=MSG_INFO['body']['flags']['status'],
+        flag=MSG_INFO['flags']['status'],
+        content='',
         footer=MSG_INFO['footer']
     )
 
 
-def compose_touch_request(enabled):
-    request = '{header}{flag}:{enabled}{footer}'
-    return request.format(
+def compose_touch_request(enable_touch):
+    content = '{touch_enabled}'.format(touch_enabled=int(enable_touch.touch_enabled))
+    return REQUEST_STRUCT.format(
         header=MSG_INFO['header'],
-        flag=MSG_INFO['body']['flags']['status'],
-        enabled=int(enabled),
+        flag=MSG_INFO['flags']['touch'],
+        content=content,
+        footer=MSG_INFO['footer']
+    )
+
+
+def compose_ir_request(enable_barrier):
+    content = '{barrier_enabled}'.format(barrier_enabled=int(enable_barrier.barrier_enabled))
+    return REQUEST_STRUCT.format(
+        header=MSG_INFO['header'],
+        flag=MSG_INFO['flags']['ir'],
+        content=content,
+        footer=MSG_INFO['footer']
+    )
+
+
+def compose_sound_request(enable_sound):
+    content = '{sound_enabled}' + MSG_INFO['values_sep'] + '{auto_follow_enabled}'
+    content = content.format(
+        sound_enabled=int(enable_sound.sound_enabled),
+        auto_follow_enabled=int(enable_sound.auto_follow_enabled)
+    )
+    return REQUEST_STRUCT.format(
+        header=MSG_INFO['header'],
+        flag=MSG_INFO['flags']['sound'],
+        content=content,
         footer=MSG_INFO['footer']
     )
 
 
 def unpack_touch_info(msg):
     touch_info = None
-    regex = MSG_INFO['body']['flags']['touch'] + '(.+?)\\' + MSG_INFO['body']['flags_sep']
+    regex = MSG_INFO['flags']['touch'] + '(.+?)\\' + MSG_INFO['flags_sep']
     regex_result = re.search(regex, msg)
     if regex_result:
-        values = [int(value) for value in regex_result.group(1).split(MSG_INFO['body']['values_sep'])]
+        values = [int(value) for value in regex_result.group(1).split(MSG_INFO['values_sep'])]
         touch_info = TouchInfo(
-            enable=bool(values[0]),
+            touch_enabled=bool(values[0]),
             lt_sensor=bool(values[1]),
             up_sensor=bool(values[2]),
             rt_sensor=bool(values[3])

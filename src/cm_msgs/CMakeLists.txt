@@ -38,6 +38,8 @@ add_action_files(
   FILES
   WriteOnSerial.action
   EnableTouch.action
+  EnableSound.action
+  EnableBarrier.action
 )
 
 ## Generate added messages and services with any dependencies listed here
