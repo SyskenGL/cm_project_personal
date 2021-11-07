@@ -187,7 +187,7 @@ class CMLowLevel(CMNode):
     def __get_initial_status(self):
         try:
             self.__serial.write(
-                bytes(compose_status_request().format(id=self.__write_on_serial_id), 'utf-8')
+                bytes(pack_status_request().format(id=self.__write_on_serial_id), 'utf-8')
             )
         except serial.SerialTimeoutException as err:
             rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))
