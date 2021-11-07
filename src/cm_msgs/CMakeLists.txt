@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  TouchInfo.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -36,6 +37,7 @@ add_message_files(
 add_action_files(
   FILES
   WriteOnSerial.action
+  EnableTouch.action
 )
 
 ## Generate added messages and services with any dependencies listed here

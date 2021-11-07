@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="cm_bridge" name="cm_touch" type="cm_touch.py" required="true" output="screen"/>
+
+</launch>
