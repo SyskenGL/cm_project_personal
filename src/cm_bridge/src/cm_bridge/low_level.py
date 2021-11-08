@@ -161,16 +161,12 @@ class CMLowLevel(CMNode):
         self.__config['write_timeout'] = rospy.get_param('~write_timeout')
 
     def __open_serial(self):
-        try:
-            self.__serial = serial.Serial(
-                self.__config['serial_port'],
-                self.__config['baud_rate'],
-                timeout=self.__config['read_timeout'],
-                write_timeout=self.__config['write_timeout']
-            )
-        except serial.SerialException as err:
-            rospy.logerr('Node {name} - {msg}'.format(name=rospy.get_name(), msg=err))
-            raise err
+        self.__serial = serial.Serial(
+            self.__config['serial_port'],
+            self.__config['baud_rate'],
+            timeout=self.__config['read_timeout'],
+            write_timeout=self.__config['write_timeout']
+        )
 
     def __close_serial(self):
         if (self.__serial is not None) and self.__serial.isOpen():
