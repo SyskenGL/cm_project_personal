@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="cm_bridge" name="cm_ir_sensors" type="cm_ir_sensors.py" required="true" output="screen"/>
+
+</launch>

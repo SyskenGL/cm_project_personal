@@ -7,10 +7,10 @@ from std_msgs.msg import String
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
-from cm_msgs.msg import TouchInfo, DisplayInfo, BarrierInfo, SoundInfo, MotorsInfo, LEDsInfo
+from cm_msgs.msg import TouchSensorsInfo, DisplayInfo, IRSensorsInfo, SoundSensorsInfo, MotorsInfo, LEDsInfo
 
 
-def compose_status_request():
+def pack_status_request():
     return '#R:[{id}|\n'
 
 
@@ -52,12 +52,12 @@ def unpack_leds_info(msg):
     return leds_info
 
 
-def unpack_sound_info(msg):
-    sound_info = None
+def unpack_sound_sensors_info(msg):
+    sound_sensors_info = None
     regex_result = re.search('S:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        sound_info = SoundInfo(
+        sound_sensors_info = SoundSensorsInfo(
             enabled=bool(values[0]),
             auto_follow=bool(values[1]),
             front=bool(values[2]),
@@ -69,15 +69,15 @@ def unpack_sound_info(msg):
             rear_right=bool(values[8]),
             rear_left=bool(values[9])
         )
-    return sound_info
+    return sound_sensors_info
 
 
-def unpack_barrier_info(msg):
-    barrier_info = None
+def unpack_ir_sensors_info(msg):
+    ir_sensors_info = None
     regex_result = re.search('O:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        barrier_info = BarrierInfo(
+        ir_sensors_info = IRSensorsInfo(
             enabled=bool(values[0]),
             front_distance=values[1],
             rear_distance=values[2],
@@ -85,21 +85,21 @@ def unpack_barrier_info(msg):
             left_distance=values[4],
             violation=bool(values[5])
         )
-    return barrier_info
+    return ir_sensors_info
 
 
-def unpack_touch_info(msg):
-    touch_info = None
+def unpack_touch_sensors_info(msg):
+    touch_sensors_info = None
     regex_result = re.search('T:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        touch_info = TouchInfo(
+        touch_sensors_info = TouchSensorsInfo(
             enabled=bool(values[0]),
             left=bool(values[1]),
             up=bool(values[2]),
             right=bool(values[3])
         )
-    return touch_info
+    return touch_sensors_info
 
 
 def unpack_display_info(msg):
@@ -187,7 +187,7 @@ class CMLowLevel(CMNode):
     def __get_initial_status(self):
         try:
             self.__serial.write(
-                bytes(compose_status_request().format(id=self.__write_on_serial_id), 'utf-8')
+                bytes(pack_status_request().format(id=self.__write_on_serial_id), 'utf-8')
             )
         except serial.SerialTimeoutException as err:
             rospy.logerr('Node {name} - {err}'.format(name=rospy.get_name(), err=err))

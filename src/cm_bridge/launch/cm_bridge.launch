@@ -15,11 +15,11 @@
             <arg name="write_timeout" value="$(arg write_timeout)"/>
         </include>
 
-        <include file="$(find cm_bridge)/launch/cm_touch.launch"/>
+        <include file="$(find cm_bridge)/launch/cm_touch_sensors.launch"/>
 
-        <include file="$(find cm_bridge)/launch/cm_barrier.launch"/>
+        <include file="$(find cm_bridge)/launch/cm_ir_sensors.launch"/>
 
-        <include file="$(find cm_bridge)/launch/cm_sound.launch"/>
+        <include file="$(find cm_bridge)/launch/cm_sound_sensors.launch"/>
 
     </group>
 

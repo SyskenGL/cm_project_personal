@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="cm_bridge" name="cm_sound_sensors" type="cm_sound_sensors.py" required="true" output="screen"/>
+
+</launch>

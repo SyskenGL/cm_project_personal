@@ -23,12 +23,14 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  TouchInfo.msg
-  BarrierInfo.msg
+  TouchSensorsInfo.msg
+  IRSensorsInfo.msg
   DisplayInfo.msg
-  SoundInfo.msg
+  SoundSensorsInfo.msg
   MotorsInfo.msg
   LEDsInfo.msg
+  AudioInfo.msg
+  Audio.msg
 )
 
 ## Generate services in the 'srv' folder
