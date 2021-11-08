@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="width"/>
+    <arg name="height"/>
+    <arg name="desired_fps"/>
+    <arg name="publish_rate"/>
+    <arg name="vcam"/>
+
+    <node pkg="cm_bridge" name="cm_camera" type="cm_camera.py" required="true" output="screen">
+        <param name="width" value="$(arg width)"/>
+        <param name="height" value="$(arg height)"/>
+        <param name="desired_fps" value="$(arg desired_fps)"/>
+        <param name="publish_rate" value="$(arg publish_rate)"/>
+        <param name="vcam" value="$(arg vcam)"/>
+    </node>
+
+</launch>

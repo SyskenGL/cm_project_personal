@@ -1,0 +1,6 @@
+MotorsInfo motors_info
+LEDsInfo leds_info
+SoundSensorsInfo sound_sensors_info
+IRSensorsInfo ir_sensors_info
+TouchSensorsInfo touch_sensors_info
+DisplayInfo display_info

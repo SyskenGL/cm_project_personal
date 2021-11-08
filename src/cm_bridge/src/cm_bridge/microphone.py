@@ -16,10 +16,10 @@ class CMMicrophone(CMNode):
         self.__configure()
 
         self.__audio_stream = None
-        self.__open_audio_stream()
+        self.__open_microphone()
 
         self.__pub_audio = rospy.Publisher('~audio', Audio, queue_size=5)
-        self.__pub_audio_info = rospy.Publisher('~audio_info', AudioInfo, queue_size=10, latch=True)
+        self.__pub_audio_info = rospy.Publisher('~audio_info', AudioInfo, queue_size=5, latch=True)
 
         self.__pub_audio_info.publish(AudioInfo(
             chunk=pow(2, self.__config['chunk_exp']),
@@ -34,7 +34,7 @@ class CMMicrophone(CMNode):
         self.__config['channels'] = rospy.get_param('~channels')
         self.__config['format'] = rospy.get_param('~format')
 
-    def __open_audio_stream(self):
+    def __open_microphone(self):
         self.__audio_stream = pyaudio.PyAudio().open(
             format=self.__config['format'],
             channels=self.__config['channels'],
@@ -43,7 +43,7 @@ class CMMicrophone(CMNode):
             input=True
         )
 
-    def __close_audio_stream(self):
+    def __close_microphone(self):
         if self.__audio_stream is not None and self.__audio_stream.is_active():
             self.__audio_stream.close()
 
@@ -54,4 +54,4 @@ class CMMicrophone(CMNode):
                 data=self.__audio_stream.read(pow(2, self.__config['chunk_exp']))
             )
             self.__pub_audio.publish(audio_msg)
-        self.__close_audio_stream()
+        self.__close_microphone()

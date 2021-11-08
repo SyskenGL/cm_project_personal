@@ -1,0 +1,2 @@
+uint16 response_id
+RobotInfo robot_info

@@ -31,6 +31,9 @@ add_message_files(
   LEDsInfo.msg
   AudioInfo.msg
   Audio.msg
+  RobotInfo.msg
+  Response.msg
+  Event.msg
 )
 
 ## Generate services in the 'srv' folder
