@@ -87,7 +87,7 @@ def unpack_ir_sensors_info(msg):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
         ir_sensors_info = IRSensorsInfo(
-            barrier_enabled=bool(values[0]),
+            barrier=bool(values[0]),
             front_distance=values[1],
             rear_distance=values[2],
             right_distance=values[3],
