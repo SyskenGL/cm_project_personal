@@ -196,7 +196,7 @@ class CMLowLevel(CMNode):
             rospy.logwarn('Node {name} - {warn}'.format(name=rospy.get_name(), warn=err))
             succeed = False
 
-        result = WriteOnSerialResult(id=self.__write_on_serial_id)
+        result = WriteOnSerialResult(assigned_id=self.__write_on_serial_id)
         if succeed:
             self.__call_api_server.set_succeeded(result)
         else:
