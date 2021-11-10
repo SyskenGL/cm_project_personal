@@ -1,4 +1,4 @@
-bool barrier_enabled
+bool barrier
 uint8 front_distance
 uint8 rear_distance
 uint8 right_distance
