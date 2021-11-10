@@ -146,11 +146,11 @@ class CMLowLevel(CMNode):
         self.__pub_event = rospy.Publisher('~event', Event, queue_size=5, latch=True)
         self.__pub_response = rospy.Publisher('~response', Response, queue_size=5, latch=True)
 
-        self.__write_on_serial_id = 0
-        self.__serial_server = actionlib.SimpleActionServer(
-            '~serial_server',
+        self.__serial_write_id = 0
+        self.__serial_as = actionlib.SimpleActionServer(
+            '~serial_as',
             WriteOnSerialAction,
-            execute_cb=self.__on_serial_write,
+            execute_cb=self.__on_serial_as_called,
             auto_start=False
         )
 
@@ -186,22 +186,22 @@ class CMLowLevel(CMNode):
                     rospy.logdebug('Node {name} - serial: {msg}'.format(name=rospy.get_name(), msg=msg))
         self.__close_serial()
 
-    def __on_serial_write(self, request):
+    def __on_serial_as_called(self, request):
         succeed = True
 
-        self.__write_on_serial_id = (self.__write_on_serial_id % 65535) + 1
+        self.__serial_write_id = (self.__serial_write_id % 65535) + 1
         try:
-            self.__serial.write(bytes(request.msg.format(id=self.__write_on_serial_id), 'utf-8'))
+            self.__serial.write(bytes(request.msg.format(id=self.__serial_write_id), 'utf-8'))
         except serial.SerialTimeoutException as err:
             rospy.logwarn('Node {name} - {warn}'.format(name=rospy.get_name(), warn=err))
             succeed = False
 
-        result = WriteOnSerialResult(assigned_id=self.__write_on_serial_id)
+        result = WriteOnSerialResult(assigned_id=self.__serial_write_id)
         if succeed:
-            self.__call_api_server.set_succeeded(result)
+            self.__serial_as.set_succeeded(result)
         else:
-            self.__call_api_server.set_aborted(result)
+            self.__serial_as.set_aborted(result)
 
     def run(self):
-        self.__serial_server.start()
+        self.__serial_as.start()
         self.__listen_serial()
