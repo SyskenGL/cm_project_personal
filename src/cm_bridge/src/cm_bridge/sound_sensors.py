@@ -17,7 +17,7 @@ class CMSoundSensors(CMNode):
             queue_size=5,
             latch=True
         )
-        self.__sub_events = None
+        self.__sub_event = None
 
     def on_event_published(self, event):
         new_sound_sensors_info = event.robot_info.sound_sensors_info
@@ -26,7 +26,7 @@ class CMSoundSensors(CMNode):
             self.__pub_sound_sensors.publish(self.__sound_sensors_info)
 
     def run(self):
-        self.__sub_events = rospy.Subscriber(
+        self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,
             self.on_event_published

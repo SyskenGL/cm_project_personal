@@ -32,16 +32,21 @@ class CMCamera(CMNode):
         self.__config['vcam'] = rospy.get_param('~vcam')
         if self.__config['desired_fps'] < self.__config['publish_rate']:
             self.__config['publish_rate'] = self.__config['desired_fps']
-            rospy.logwarn('Node {name} - publish_rate forced to desired_fps'.format(name=rospy.get_name()))
+            rospy.logwarn('Parameter publish_rate forced to desired_fps. '
+                          'Parameter publish_rate should be less than desired_fps.')
 
     def __open_camera(self):
         self.__cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
         if not self.__cap.isOpened():
-            rospy.logerr('Node {name} - Unable to open camera by index.'.format(name=rospy.get_name()))
+            rospy.logerr('Unable to open camera by index.')
+            exit(1)
         self.__cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.__cap.set(cv2.CAP_PROP_FPS, self.__config['desired_fps'])
         self.__cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.__config['width'])
         self.__cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.__config['height'])
+        rospy.logdebug('Actual desired_fps: %s', self.__cap.get(cv2.CAP_PROP_FPS))
+        rospy.logdebug('Actual width: %s', self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        rospy.logdebug('Actual height: %s', self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.__vcam = pyfakewebcam.FakeWebcam(
             self.__config['vcam'],
             self.__config['width'],
@@ -53,18 +58,18 @@ class CMCamera(CMNode):
             self.__cap.release()
 
     def run(self):
+        rate = rospy.Rate(self.__config['publish_rate'])
         while not rospy.is_shutdown():
             ret, frame = self.__cap.read()
             if not ret:
-                rospy.logwarn('Node {name} - Can\'t receive any frame.'.format(name=rospy.get_name()))
+                rospy.logwarn('Can\'t receive any frame.')
                 break
             try:
                 self.__vcam.schedule_frame(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                 image = self.__cv_bridge.cv2_to_imgmsg(frame, encoding='passthrough')
                 image.header.stamp = rospy.Time.now()
                 self.__pub_image.publish(image)
-            except CvBridgeError as err:
-                rospy.logwarn('Node {name} - {warn}'.format(name=rospy.get_name(), warn=err))
-            except Exception as err:
-                rospy.logwarn('Node {name} - {warn}'.format(name=rospy.get_name(), warn=err))
+            except (CvBridgeError, Exception) as err:
+                rospy.logwarn(err)
+            rate.sleep()
         self.__close_camera()

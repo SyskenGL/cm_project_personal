@@ -19,7 +19,12 @@ class CMMicrophone(CMNode):
         self.__open_microphone()
 
         self.__pub_audio = rospy.Publisher('~audio', Audio, queue_size=5)
-        self.__pub_audio_info = rospy.Publisher('~audio_info', AudioInfo, queue_size=5, latch=True)
+        self.__pub_audio_info = rospy.Publisher(
+            '~audio_info',
+            AudioInfo,
+            queue_size=5,
+            latch=True
+        )
 
         self.__pub_audio_info.publish(AudioInfo(
             chunk=pow(2, self.__config['chunk_exp']),

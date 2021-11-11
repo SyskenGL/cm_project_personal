@@ -1,5 +1,5 @@
 bool enabled
-bool auto_follow
+bool auto_follow_enabled
 bool front
 bool rear
 bool right

@@ -1,1 +1,1 @@
-uint8 face_code
+uint8 displayed_face_code

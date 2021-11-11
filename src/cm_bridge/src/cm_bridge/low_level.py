@@ -68,7 +68,7 @@ def unpack_sound_sensors_info(msg):
         values = [int(value) for value in regex_result.group(1).split(',')]
         sound_sensors_info = SoundSensorsInfo(
             enabled=bool(values[0]),
-            auto_follow=bool(values[1]),
+            auto_follow_enabled=bool(values[1]),
             front=bool(values[2]),
             rear=bool(values[3]),
             right=bool(values[4]),
@@ -87,12 +87,12 @@ def unpack_ir_sensors_info(msg):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
         ir_sensors_info = IRSensorsInfo(
-            barrier=bool(values[0]),
+            barrier_enabled=bool(values[0]),
             front_distance=values[1],
             rear_distance=values[2],
             right_distance=values[3],
             left_distance=values[4],
-            violation=bool(values[5])
+            violation_detected=bool(values[5])
         )
     return ir_sensors_info
 
@@ -117,7 +117,7 @@ def unpack_display_info(msg):
     regex_result = re.search('V:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        display_info = DisplayInfo(face_code=values[0])
+        display_info = DisplayInfo(displayed_face_code=values[0])
     return display_info
 
 
@@ -143,8 +143,18 @@ class CMLowLevel(CMNode):
         self.__serial = None
         self.__open_serial()
 
-        self.__pub_event = rospy.Publisher('~event', Event, queue_size=5, latch=True)
-        self.__pub_response = rospy.Publisher('~response', Response, queue_size=5, latch=True)
+        self.__pub_event = rospy.Publisher(
+            '~event',
+            Event,
+            queue_size=5,
+            latch=True
+        )
+        self.__pub_response = rospy.Publisher(
+            '~response',
+            Response,
+            queue_size=5,
+            latch=True
+        )
 
         self.__serial_write_id = 0
         self.__serial_as = actionlib.SimpleActionServer(
@@ -179,11 +189,13 @@ class CMLowLevel(CMNode):
                     robot_info = unpack_robot_info(msg)
                     response_id = unpack_response_id(msg)
                     if response_id is not None:
-                        self.__pub_response.publish(Response(response_id=response_id, robot_info=robot_info))
+                        response = Response(response_id=response_id, robot_info=robot_info)
+                        self.__pub_response.publish(response)
                     else:
-                        self.__pub_event.publish(Event(robot_info=robot_info))
+                        event = Event(robot_info=robot_info)
+                        self.__pub_event.publish(event)
                 else:
-                    rospy.logdebug('Node {name} - serial: {msg}'.format(name=rospy.get_name(), msg=msg))
+                    rospy.logdebug('Debug info from serial: %s', msg)
         self.__close_serial()
 
     def __on_serial_as_called(self, request):
@@ -191,9 +203,10 @@ class CMLowLevel(CMNode):
 
         self.__serial_write_id = (self.__serial_write_id % 65535) + 1
         try:
-            self.__serial.write(bytes(request.msg.format(id=self.__serial_write_id), 'utf-8'))
+            request = bytes(request.msg.format(id=self.__serial_write_id))
+            self.__serial.write(request, 'utf-8')
         except serial.SerialTimeoutException as err:
-            rospy.logwarn('Node {name} - {warn}'.format(name=rospy.get_name(), warn=err))
+            rospy.logwarn(err)
             succeed = False
 
         result = WriteOnSerialResult(assigned_id=self.__serial_write_id)

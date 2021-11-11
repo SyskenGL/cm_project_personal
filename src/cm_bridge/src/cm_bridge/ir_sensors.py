@@ -11,8 +11,13 @@ class CMIRSensors(CMNode):
 
         self.__ir_sensors_info = None
 
-        self.__pub_ir_sensors = rospy.Publisher('~info', IRSensorsInfo, queue_size=5, latch=True)
-        self.__sub_events = None
+        self.__pub_ir_sensors = rospy.Publisher(
+            '~info',
+            IRSensorsInfo,
+            queue_size=5,
+            latch=True
+        )
+        self.__sub_event = None
 
     def on_event_published(self, event):
         new_ir_sensors_info = event.robot_info.ir_sensors_info
@@ -21,7 +26,7 @@ class CMIRSensors(CMNode):
             self.__pub_ir_sensors.publish(self.__ir_sensors_info)
 
     def run(self):
-        self.__sub_events = rospy.Subscriber(
+        self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,
             self.on_event_published
