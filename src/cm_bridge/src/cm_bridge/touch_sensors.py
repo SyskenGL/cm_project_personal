@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from cm_ros.wrapper import CMNode
-from cm_msgs.msg import Event, TouchSensorsInfo
+from cm_msgs.msg import Event, TouchSensorsInfo, SetTouchSensorsEnabledAction
 
 
 class CMTouchSensors(CMNode):
@@ -18,6 +18,13 @@ class CMTouchSensors(CMNode):
             latch=True
         )
         self.__sub_event = None
+        
+        self.__touch_sensors_server(
+            '~__touch_sensors_server',
+            SetTouchSensorsEnabledAction,
+            execute_cb=self.__on_serial_as_called,
+            auto_start=False
+        )
 
     def on_event_published(self, event):
         new_touch_sensors_info = event.robot_info.touch_sensors_info

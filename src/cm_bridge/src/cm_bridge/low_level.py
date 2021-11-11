@@ -157,10 +157,10 @@ class CMLowLevel(CMNode):
         )
 
         self.__serial_write_id = 0
-        self.__serial_as = actionlib.SimpleActionServer(
-            '~serial_as',
+        self.__serial_server = actionlib.SimpleActionServer(
+            '~serial_server',
             WriteOnSerialAction,
-            execute_cb=self.__on_serial_as_called,
+            execute_cb=self.__on_serial_server_called,
             auto_start=False
         )
 
@@ -198,7 +198,7 @@ class CMLowLevel(CMNode):
                     rospy.logdebug('Debug info from serial: %s', msg)
         self.__close_serial()
 
-    def __on_serial_as_called(self, request):
+    def __on_serial_server_called(self, request):
         succeed = True
 
         self.__serial_write_id = (self.__serial_write_id % 65535) + 1
@@ -211,10 +211,10 @@ class CMLowLevel(CMNode):
 
         result = WriteOnSerialResult(assigned_id=self.__serial_write_id)
         if succeed:
-            self.__serial_as.set_succeeded(result)
+            self.__serial_server.set_succeeded(result)
         else:
-            self.__serial_as.set_aborted(result)
+            self.__serial_server.set_aborted(result)
 
     def run(self):
-        self.__serial_as.start()
+        self.__serial_server.start()
         self.__listen_serial()
