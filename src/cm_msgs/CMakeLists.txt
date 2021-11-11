@@ -48,6 +48,7 @@ add_action_files(
   FILES
   WriteOnSerial.action
   SetTouchSensorsEnabled.action
+  SetBarrierEnabled.action
 )
 
 ## Generate added messages and services with any dependencies listed here

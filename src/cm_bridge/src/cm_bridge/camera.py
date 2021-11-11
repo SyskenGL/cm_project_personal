@@ -30,6 +30,7 @@ class CMCamera(CMNode):
         self.__config['desired_fps'] = rospy.get_param('~desired_fps')
         self.__config['publish_rate'] = rospy.get_param('~publish_rate')
         self.__config['vcam'] = rospy.get_param('~vcam')
+
         if self.__config['desired_fps'] < self.__config['publish_rate']:
             self.__config['publish_rate'] = self.__config['desired_fps']
             rospy.logwarn('Parameter publish_rate forced to desired_fps. '
@@ -40,13 +41,16 @@ class CMCamera(CMNode):
         if not self.__cap.isOpened():
             rospy.logerr('Unable to open camera by index.')
             exit(1)
+
         self.__cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.__cap.set(cv2.CAP_PROP_FPS, self.__config['desired_fps'])
         self.__cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.__config['width'])
         self.__cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.__config['height'])
+
         rospy.logdebug('Actual desired_fps: %s', self.__cap.get(cv2.CAP_PROP_FPS))
         rospy.logdebug('Actual width: %s', self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         rospy.logdebug('Actual height: %s', self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
         self.__vcam = pyfakewebcam.FakeWebcam(
             self.__config['vcam'],
             self.__config['width'],

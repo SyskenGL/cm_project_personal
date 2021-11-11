@@ -15,6 +15,14 @@ def pack_status_request():
     return '#R:[{id}|\n'
 
 
+def pack_touch_sensors_request(enabled):
+    return '#T:{enabled}'.format(enabled=enabled) + '[{id}|\n'
+
+
+def pack_ir_sensors_request(barrier_enabled):
+    return '#O:{barrier_enabled}'.format(barrier_enabled=barrier_enabled) + '[{id}|\n'
+
+
 def unpack_response_id(msg):
     response_id = None
     regex_result = re.search(r'\[\d+\|', msg)
@@ -189,7 +197,7 @@ class CMLowLevel(CMNode):
                     robot_info = unpack_robot_info(msg)
                     response_id = unpack_response_id(msg)
                     if response_id is not None:
-                        response = Response(response_id=response_id, robot_info=robot_info)
+                        response = Response(id=response_id, robot_info=robot_info)
                         self.__pub_response.publish(response)
                     else:
                         event = Event(robot_info=robot_info)
@@ -203,8 +211,8 @@ class CMLowLevel(CMNode):
 
         self.__serial_write_id = (self.__serial_write_id % 65535) + 1
         try:
-            request = bytes(request.msg.format(id=self.__serial_write_id))
-            self.__serial.write(request, 'utf-8')
+            request = bytes(request.msg.format(id=self.__serial_write_id), 'utf-8')
+            self.__serial.write(request)
         except serial.SerialTimeoutException as err:
             rospy.logwarn(err)
             succeed = False

@@ -19,7 +19,7 @@ class CMSoundSensors(CMNode):
         )
         self.__sub_event = None
 
-    def on_event_published(self, event):
+    def __on_event_published(self, event):
         new_sound_sensors_info = event.robot_info.sound_sensors_info
         if self.__sound_sensors_info != new_sound_sensors_info:
             self.__sound_sensors_info = new_sound_sensors_info
@@ -29,6 +29,6 @@ class CMSoundSensors(CMNode):
         self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,
-            self.on_event_published
+            self.__on_event_published
         )
         rospy.spin()

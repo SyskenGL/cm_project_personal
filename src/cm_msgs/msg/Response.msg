@@ -1,2 +1,2 @@
-uint16 response_id
+uint16 id
 RobotInfo robot_info
