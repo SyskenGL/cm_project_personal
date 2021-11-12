@@ -5,6 +5,7 @@ import serial
 import actionlib
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
+from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_msgs.msg import LED, Flash, Motor
 from cm_msgs.msg import Event, Response
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
@@ -179,8 +180,15 @@ class CMLowLevel(CMNode):
         self.__config = defaultdict(lambda: None)
         self.__configure()
 
+        self.__serial_write_id = 0
         self.__serial = None
         self.__open_serial()
+
+        try:
+            self.__get_initial_status()
+        except FunctionTimedOut:
+            rospy.logerr('Unable to get initial status oif the robot. Wait timed out.')
+            exit(1)
 
         self.__pub_event = rospy.Publisher(
             '~event',
@@ -195,7 +203,6 @@ class CMLowLevel(CMNode):
             latch=True
         )
 
-        self.__serial_write_id = 0
         self.__serial_server = actionlib.SimpleActionServer(
             '~serial_server',
             WriteOnSerialAction,
@@ -225,16 +232,15 @@ class CMLowLevel(CMNode):
         while not rospy.is_shutdown():
             if msg := str(self.__serial.readline(), 'utf-8'):
                 if msg[0] == '#':
-                    robot_info = unpack_robot_info(msg)
                     if response_id := unpack_response_id(msg) is not None:
-                        response = Response(
+                        self.__pub_response.publish(Response(
                             id=response_id,
-                            robot_info=robot_info
-                        )
-                        self.__pub_response.publish(response)
+                            robot_info=unpack_robot_info(msg)
+                        ))
                     else:
-                        event = Event(robot_info=robot_info)
-                        self.__pub_event.publish(event)
+                        self.__pub_event.publish(Event(
+                            robot_info=unpack_robot_info(msg)
+                        ))
                 else:
                     rospy.logdebug('Debug info from serial: %s', msg)
         self.__close_serial()
@@ -243,8 +249,8 @@ class CMLowLevel(CMNode):
         succeed = True
 
         self.__serial_write_id = (self.__serial_write_id % 65535) + 1
+        request = bytes(request.message.format(id=self.__serial_write_id), 'utf-8')
         try:
-            request = bytes(request.message.format(id=self.__serial_write_id), 'utf-8')
             self.__serial.write(request)
         except serial.SerialTimeoutException as err:
             rospy.logwarn(err)
@@ -255,6 +261,18 @@ class CMLowLevel(CMNode):
             self.__serial_server.set_succeeded(result)
         else:
             self.__serial_server.set_aborted(result)
+
+    @func_set_timeout(10)
+    def __get_initial_status(self):
+        request = bytes(pack_status_request().format(id=self.__serial_write_id), 'utf-8')
+        self.__serial.write(request)
+        while not (response := str(self.__serial.readline(), 'utf-8')) \
+                and unpack_response_id(response) != self.__serial_write_id:
+            pass
+        self.__pub_response.publish(Response(
+            id=self.__serial_write_id,
+            robot_info=unpack_robot_info(response)
+        ))
 
     def run(self):
         self.__serial_server.start()

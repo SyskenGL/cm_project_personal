@@ -88,6 +88,7 @@ class CMIRSensors(CMNode):
 
     def run(self):
         self.__serial_client.wait_for_server()
+        self.__wait_for_serial_response(0)
         self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,
