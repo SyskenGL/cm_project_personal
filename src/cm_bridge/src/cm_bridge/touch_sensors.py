@@ -14,6 +14,11 @@ class CMTouchSensors(CMNode):
         CMNode.__init__(self, name)
 
         self.__touch_sensors_info = None
+        self.__update_touch_sensors_info(rospy.wait_for_message(
+                '/cm_bridge/cm_low_level/response',
+                Response,
+            ).robot_info.touch_sensors_info
+        )
 
         self.__pub_touch_sensors_info = rospy.Publisher(
             '~info',
@@ -33,6 +38,8 @@ class CMTouchSensors(CMNode):
             '/cm_bridge/cm_low_level/serial_server',
             WriteOnSerialAction
         )
+
+        self.__serial_client.wait_for_server()
 
     def __on_touch_sensors_server_called(self, request):
         succeed = True
@@ -87,8 +94,6 @@ class CMTouchSensors(CMNode):
             self.__pub_touch_sensors_info.publish(self.__touch_sensors_info)
 
     def run(self):
-        self.__serial_client.wait_for_server()
-        self.__wait_for_serial_response(0)
         self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,

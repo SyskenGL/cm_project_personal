@@ -14,6 +14,11 @@ class CMSoundSensors(CMNode):
         CMNode.__init__(self, name)
 
         self.__sound_sensors_info = None
+        self.__update_sound_sensors_info(rospy.wait_for_message(
+                '/cm_bridge/cm_low_level/response',
+                Response,
+            ).robot_info.sound_sensors_info
+        )
 
         self.__pub_sound_sensors_info = rospy.Publisher(
             '~info',
@@ -33,6 +38,7 @@ class CMSoundSensors(CMNode):
             '/cm_bridge/cm_low_level/serial_server',
             WriteOnSerialAction
         )
+        self.__serial_client.wait_for_server()
 
     def __on_sound_sensors_server_called(self, request):
         succeed = True
@@ -92,8 +98,6 @@ class CMSoundSensors(CMNode):
             self.__pub_sound_sensors_info.publish(self.__sound_sensors_info)
 
     def run(self):
-        self.__serial_client.wait_for_server()
-        self.__wait_for_serial_response(0)
         self.__sub_event = rospy.Subscriber(
             '/cm_bridge/cm_low_level/event',
             Event,

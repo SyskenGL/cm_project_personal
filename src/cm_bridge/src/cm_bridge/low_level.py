@@ -189,9 +189,6 @@ class CMLowLevel(CMNode):
         except FunctionTimedOut:
             rospy.logerr('Unable to get initial status. Wait timed out.')
             exit(1)
-        except serial.SerialTimeoutException as err:
-            rospy.logwarn(err)
-            exit(1)
 
         self.__pub_event = rospy.Publisher(
             '~event',
