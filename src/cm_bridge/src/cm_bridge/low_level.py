@@ -187,7 +187,10 @@ class CMLowLevel(CMNode):
         try:
             self.__get_initial_status()
         except FunctionTimedOut:
-            rospy.logerr('Unable to get initial status oif the robot. Wait timed out.')
+            rospy.logerr('Unable to get initial status. Wait timed out.')
+            exit(1)
+        except serial.SerialTimeoutException as err:
+            rospy.logwarn(err)
             exit(1)
 
         self.__pub_event = rospy.Publisher(
