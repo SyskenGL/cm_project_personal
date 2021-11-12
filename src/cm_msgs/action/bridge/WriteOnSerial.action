@@ -1,4 +1,4 @@
-string msg
+string message
 ---
 uint16 assigned_id
 ---

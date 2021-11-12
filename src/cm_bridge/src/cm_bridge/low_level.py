@@ -5,6 +5,7 @@ import serial
 import actionlib
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
+from cm_msgs.msg import LED, Flash, Motor
 from cm_msgs.msg import Event, Response
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
 from cm_msgs.msg import TouchSensorsInfo, DisplayInfo, IRSensorsInfo
@@ -16,11 +17,17 @@ def pack_status_request():
 
 
 def pack_touch_sensors_request(enabled):
-    return '#T:{enabled}'.format(enabled=enabled) + '[{id}|\n'
+    return '#T:{enabled}'.format(enabled=int(enabled)) + '[{id}|\n'
 
 
-def pack_ir_sensors_request(barrier_enabled):
-    return '#O:{barrier_enabled}'.format(barrier_enabled=barrier_enabled) + '[{id}|\n'
+def pack_ir_sensors_request(barrier):
+    return '#O:{barrier}'.format(barrier=int(barrier)) + '[{id}|\n'
+
+
+def pack_sound_sensors_request(enabled, auto_follow):
+    return '#S:{enabled},{auto_follow}'.format(
+        enabled=int(enabled), auto_follow=int(auto_follow)
+    ) + '[{id}|\n'
 
 
 def unpack_response_id(msg):
@@ -37,12 +44,30 @@ def unpack_motors_info(msg):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
         motors_info = MotorsInfo(
-            m0_angle=values[0],
-            m1_angle=values[1],
-            m2_angle=values[2],
-            m3_angle=values[3],
-            m4_angle=values[4],
-            m5_angle=values[5]
+            motor_0=Motor(
+                angle=values[0],
+                speed=None
+            ),
+            motor_1=Motor(
+                angle=values[1],
+                speed=None
+            ),
+            motor_2=Motor(
+                angle=values[2],
+                speed=None
+            ),
+            motor_3=Motor(
+                angle=values[3],
+                speed=None
+            ),
+            motor_4=Motor(
+                angle=values[4],
+                speed=None
+            ),
+            motor_5=Motor(
+                angle=values[5],
+                speed=None
+            )
         )
     return motors_info
 
@@ -53,18 +78,24 @@ def unpack_leds_info(msg):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
         leds_info = LEDsInfo(
-            front_led_enabled=bool(values[0]),
-            front_led_intensity=values[1],
-            left_led_enabled=bool(values[2]),
-            left_led_red=values[3],
-            left_led_green=values[4],
-            left_led_blue=values[5],
-            left_led_blink=bool(values[6]),
-            right_led_enabled=bool(values[7]),
-            right_led_red=values[8],
-            right_led_green=values[9],
-            right_led_blue=values[10],
-            right_led_blink=bool(values[11])
+            flash=Flash(
+                on=bool(values[0]),
+                intensity=values[1]
+            ),
+            left_led=LED(
+                on=bool(values[2]),
+                red=values[3],
+                green=values[4],
+                blue=values[5],
+                blink=bool(values[6])
+            ),
+            right_led=LED(
+                on=bool(values[7]),
+                red=values[8],
+                green=values[9],
+                blue=values[10],
+                blink=bool(values[11])
+            )
         )
     return leds_info
 
@@ -76,7 +107,7 @@ def unpack_sound_sensors_info(msg):
         values = [int(value) for value in regex_result.group(1).split(',')]
         sound_sensors_info = SoundSensorsInfo(
             enabled=bool(values[0]),
-            auto_follow_enabled=bool(values[1]),
+            auto_follow=bool(values[1]),
             front=bool(values[2]),
             rear=bool(values[3]),
             right=bool(values[4]),
@@ -95,7 +126,7 @@ def unpack_ir_sensors_info(msg):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
         ir_sensors_info = IRSensorsInfo(
-            barrier_enabled=bool(values[0]),
+            barrier=bool(values[0]),
             front_distance=values[1],
             rear_distance=values[2],
             right_distance=values[3],
@@ -125,7 +156,7 @@ def unpack_display_info(msg):
     regex_result = re.search('V:(.+?)\|', msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(',')]
-        display_info = DisplayInfo(displayed_face_code=values[0])
+        display_info = DisplayInfo(face_code=values[0])
     return display_info
 
 
@@ -195,9 +226,11 @@ class CMLowLevel(CMNode):
             if msg := str(self.__serial.readline(), 'utf-8'):
                 if msg[0] == '#':
                     robot_info = unpack_robot_info(msg)
-                    response_id = unpack_response_id(msg)
-                    if response_id is not None:
-                        response = Response(id=response_id, robot_info=robot_info)
+                    if response_id := unpack_response_id(msg) is not None:
+                        response = Response(
+                            id=response_id,
+                            robot_info=robot_info
+                        )
                         self.__pub_response.publish(response)
                     else:
                         event = Event(robot_info=robot_info)
@@ -211,7 +244,7 @@ class CMLowLevel(CMNode):
 
         self.__serial_write_id = (self.__serial_write_id % 65535) + 1
         try:
-            request = bytes(request.msg.format(id=self.__serial_write_id), 'utf-8')
+            request = bytes(request.message.format(id=self.__serial_write_id), 'utf-8')
             self.__serial.write(request)
         except serial.SerialTimeoutException as err:
             rospy.logwarn(err)

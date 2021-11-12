@@ -5,7 +5,7 @@ from cm_ros.wrapper import CMNode
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_ir_sensors_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
-from cm_msgs.msg import Response, Event, IRSensorsInfo, SetBarrierEnabledAction
+from cm_msgs.msg import Response, Event, IRSensorsInfo, SetIRSensorsAction
 
 
 class CMIRSensors(CMNode):
@@ -15,7 +15,7 @@ class CMIRSensors(CMNode):
 
         self.__ir_sensors_info = None
 
-        self.__pub_ir_sensors = rospy.Publisher(
+        self.__pub_ir_sensors_info = rospy.Publisher(
             '~info',
             IRSensorsInfo,
             queue_size=5,
@@ -25,7 +25,7 @@ class CMIRSensors(CMNode):
 
         self.__ir_sensors_server = actionlib.SimpleActionServer(
             '~ir_sensors_server',
-            SetBarrierEnabledAction,
+            SetIRSensorsAction,
             execute_cb=self.__on_ir_sensors_server_called,
             auto_start=False
         )
@@ -37,10 +37,11 @@ class CMIRSensors(CMNode):
     def __on_ir_sensors_server_called(self, request):
         succeed = True
 
-        if self.__ir_sensors_info is None or request.enabled != self.__ir_sensors_info.enabled:
+        if not self.__is_request_ignorable(request):
 
-            request = pack_ir_sensors_request(request.enabled)
-            self.__serial_client.send_goal(WriteOnSerialGoal(msg=request))
+            self.__serial_client.send_goal(WriteOnSerialGoal(
+                message=pack_ir_sensors_request(request.barrier)
+            ))
             self.__serial_client.wait_for_result()
             assigned_id = self.__serial_client.get_result()
 
@@ -58,6 +59,13 @@ class CMIRSensors(CMNode):
         else:
             self.__ir_sensors_server.set_aborted()
 
+    def __is_request_ignorable(self, request):
+        if self.__ir_sensors_info is None:
+            return False
+        if request.barrier != self.__ir_sensors_info.barrier:
+            return False
+        return True
+
     @func_set_timeout(10)
     def __wait_for_serial_response(self, assigned_id):
         while not rospy.is_shutdown():
@@ -66,7 +74,9 @@ class CMIRSensors(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                self.__update_ir_sensors_info(response.robot_info.ir_sensors_info)
+                self.__update_ir_sensors_info(
+                    response.robot_info.ir_sensors_info
+                )
 
     def __on_event_published(self, event):
         self.__update_ir_sensors_info(event.robot_info.ir_sensors_info)
@@ -74,7 +84,7 @@ class CMIRSensors(CMNode):
     def __update_ir_sensors_info(self, new_ir_sensors_info):
         if self.__ir_sensors_info != new_ir_sensors_info:
             self.__ir_sensors_info = new_ir_sensors_info
-            self.__pub_ir_sensors.publish(self.__ir_sensors_info)
+            self.__pub_ir_sensors_info.publish(self.__ir_sensors_info)
 
     def run(self):
         self.__serial_client.wait_for_server()

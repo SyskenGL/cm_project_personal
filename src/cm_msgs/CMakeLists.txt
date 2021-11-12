@@ -20,20 +20,24 @@ find_package(catkin REQUIRED COMPONENTS
 ## Declare ROS messages, services and actions ##
 ################################################
 
-## Generate messages in the 'msg' folder
+## Generate messages in the 'msg/bridge' folder
 add_message_files(
+  DIRECTORY msg/bridge
   FILES
+  LED.msg
+  Flash.msg
+  Motor.msg
   TouchSensorsInfo.msg
   IRSensorsInfo.msg
   DisplayInfo.msg
   SoundSensorsInfo.msg
   MotorsInfo.msg
   LEDsInfo.msg
-  AudioInfo.msg
-  Audio.msg
   RobotInfo.msg
   Response.msg
   Event.msg
+  AudioInfo.msg
+  Audio.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -43,12 +47,14 @@ add_message_files(
 #   Service2.srv
 # )
 
-## Generate actions in the 'action' folder
+## Generate actions in the 'action/bridge' folder
 add_action_files(
+  DIRECTORY action/bridge
   FILES
   WriteOnSerial.action
-  SetTouchSensorsEnabled.action
-  SetBarrierEnabled.action
+  SetTouchSensors.action
+  SetSoundSensors.action
+  SetIRSensors.action
 )
 
 ## Generate added messages and services with any dependencies listed here
