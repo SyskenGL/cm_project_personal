@@ -40,7 +40,6 @@ class CMSoundSensors(CMNode):
         assigned_id = self.__serial_client.get_result()
 
         if self.__serial_client.get_state() != actionlib.GoalStatus.SUCCEEDED:
-            print(self.__serial_client.get_state())
             fatal = "Unable to get initial sound sensors info."
             rospy.logfatal(fatal)
             rospy.signal_shutdown(fatal)

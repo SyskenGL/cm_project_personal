@@ -30,6 +30,10 @@ def pack_sound_sensors_request(enabled, auto_follow):
     ) + "[{id}|\n"
 
 
+def pack_display_request(face_code):
+    return "#V:{face_code}".format(face_code=int(face_code)) + "[{id}|\n"
+
+
 def unpack_response_id(msg):
     response_id = None
     regex_result = re.search(r"\[\d \|", msg)

@@ -40,7 +40,6 @@ class CMIRSensors(CMNode):
         assigned_id = self.__serial_client.get_result()
 
         if self.__serial_client.get_state() != actionlib.GoalStatus.SUCCEEDED:
-            print(self.__serial_client.get_state())
             fatal = "Unable to get initial IR sensors info."
             rospy.logfatal(fatal)
             rospy.signal_shutdown(fatal)
@@ -48,7 +47,7 @@ class CMIRSensors(CMNode):
             try:
                 self.__wait_for_serial_response(assigned_id)
             except FunctionTimedOut:
-                fatal = "Unable to get initial sound IR info. Wait timed out."
+                fatal = "Unable to get initial IR sensors info. Wait timed out."
                 rospy.logfatal(fatal)
                 rospy.signal_shutdown(fatal)
 

@@ -55,6 +55,7 @@ add_action_files(
   SetTouchSensors.action
   SetSoundSensors.action
   SetIRSensors.action
+  SetDisplay.action
 )
 
 ## Generate added messages and services with any dependencies listed here
