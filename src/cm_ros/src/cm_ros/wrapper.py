@@ -8,7 +8,7 @@ class CMNode:
     A ROS Node wrapper
     """
 
-    def __init__(self, name='cm_node'):
+    def __init__(self, name="cm_node"):
 
         """
         Parameters
@@ -19,7 +19,7 @@ class CMNode:
 
         rospy.init_node(name)
         rospy.on_shutdown(self.__on_ros_shutdown)
-        rospy.loginfo('Node {name} initialized.'.format(name=rospy.get_name()))
+        rospy.loginfo("Node {name} initialized.".format(name=rospy.get_name()))
 
     def __on_ros_shutdown(self):
 
@@ -27,9 +27,9 @@ class CMNode:
         Callback function called whenever rospy.spin() stops
         """
 
-        rospy.loginfo('Node {name} is stopping.'.format(name=rospy.get_name()))
+        rospy.loginfo("Node {name} is stopping.".format(name=rospy.get_name()))
         self.on_ros_shutdown()
-        rospy.loginfo('Node {name} is stopped.'.format(name=rospy.get_name()))
+        rospy.loginfo("Node {name} stopped.".format(name=rospy.get_name()))
 
     def on_ros_shutdown(self):
 
@@ -53,5 +53,5 @@ class CMNode:
         Starts the node by executing the run method
         """
 
-        rospy.loginfo('Node {name} started.'.format(name=rospy.get_name()))
+        rospy.loginfo("Node {name} started.".format(name=rospy.get_name()))
         self.run()

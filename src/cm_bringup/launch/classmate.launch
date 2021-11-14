@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
 <launch>
-
-    <include file="$(find cm_bridge)/launch/cm_bridge.launch"/>
-
+	<include file="$(find cm_bridge)/launch/cm_bridge.launch"/>
 </launch>

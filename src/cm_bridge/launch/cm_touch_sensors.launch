@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
 <launch>
-
-    <node pkg="cm_bridge" name="cm_touch_sensors" type="cm_touch_sensors.py" required="true" output="screen"/>
-
+	<node pkg="cm_bridge" name="cm_touch_sensors" type="cm_touch_sensors.py" required="true" output="screen"/>
 </launch>

@@ -1,58 +1,46 @@
 <?xml version="1.0"?>
 <launch>
-
-    <group ns="cm_bridge">
-
-        <!-- cm_low_level NODE -->
-        <arg name="serial_port" default="/dev/ttyS0"/>
-        <arg name="baud_rate" default="115200"/>
-        <arg name="read_timeout" default="1"/>
-        <arg name="write_timeout" default="1"/>
-
-        <include file="$(find cm_bridge)/launch/cm_low_level.launch">
-            <arg name="serial_port" value="$(arg serial_port)"/>
-            <arg name="baud_rate" value="$(arg baud_rate)"/>
-            <arg name="read_timeout" value="$(arg read_timeout)"/>
-            <arg name="write_timeout" value="$(arg write_timeout)"/>
-        </include>
-
-        <!-- cm_touch_sensors NODE -->
-        <include file="$(find cm_bridge)/launch/cm_touch_sensors.launch"/>
-
-        <!-- cm_ir_sensors NODE -->
-        <include file="$(find cm_bridge)/launch/cm_ir_sensors.launch"/>
-
-        <!-- cm_sound_sensors NODE -->
-        <include file="$(find cm_bridge)/launch/cm_sound_sensors.launch"/>
-
-        <!-- cm_microphone NODE -->
-        <arg name="format" default="1"/>
-        <arg name="channels" default="2"/>
-        <arg name="chunk_exp" default="12"/>
-        <arg name="rate" default="44100"/>
-
-        <include file="$(find cm_bridge)/launch/cm_microphone.launch">
-            <arg name="format" value="$(arg format)"/>
-            <arg name="channels" value="$(arg channels)"/>
-            <arg name="chunk_exp" value="$(arg chunk_exp)"/>
-            <arg name="rate" value="$(arg rate)"/>
-        </include>
-
-        <!-- cm_camera NODE -->
-        <arg name="width" default="1920"/>
-        <arg name="height" default="1080"/>
-        <arg name="desired_fps" default="30"/>
-        <arg name="publish_rate" default="30"/>
-        <arg name="vcam" default="/dev/video3"/>
-
-        <include file="$(find cm_bridge)/launch/cm_camera.launch">
-            <arg name="width" value="$(arg width)"/>
-            <arg name="height" value="$(arg height)"/>
-            <arg name="desired_fps" value="$(arg desired_fps)"/>
-            <arg name="publish_rate" value="$(arg publish_rate)"/>
-            <arg name="vcam" value="$(arg vcam)"/>
-        </include>
-
-    </group>
-
+	<group ns="cm_bridge">
+		<!-- cm_low_level NODE -->
+		<arg name="serial_port" default="/dev/ttyS0"/>
+		<arg name="baud_rate" default="115200"/>
+		<arg name="read_timeout" default="1"/>
+		<arg name="write_timeout" default="1"/>
+		<include file="$(find cm_bridge)/launch/cm_low_level.launch">
+			<arg name="serial_port" value="$(arg serial_port)"/>
+			<arg name="baud_rate" value="$(arg baud_rate)"/>
+			<arg name="read_timeout" value="$(arg read_timeout)"/>
+			<arg name="write_timeout" value="$(arg write_timeout)"/>
+		</include>
+		<!-- cm_touch_sensors NODE -->
+		<include file="$(find cm_bridge)/launch/cm_touch_sensors.launch"/>
+		<!-- cm_ir_sensors NODE -->
+		<include file="$(find cm_bridge)/launch/cm_ir_sensors.launch"/>
+		<!-- cm_sound_sensors NODE -->
+		<include file="$(find cm_bridge)/launch/cm_sound_sensors.launch"/>
+		<!-- cm_microphone NODE -->
+		<arg name="format" default="1"/>
+		<arg name="channels" default="2"/>
+		<arg name="chunk_exp" default="12"/>
+		<arg name="rate" default="44100"/>
+		<include file="$(find cm_bridge)/launch/cm_microphone.launch">
+			<arg name="format" value="$(arg format)"/>
+			<arg name="channels" value="$(arg channels)"/>
+			<arg name="chunk_exp" value="$(arg chunk_exp)"/>
+			<arg name="rate" value="$(arg rate)"/>
+		</include>
+		<!-- cm_camera NODE -->
+		<arg name="width" default="1920"/>
+		<arg name="height" default="1080"/>
+		<arg name="desired_fps" default="30"/>
+		<arg name="publish_rate" default="30"/>
+		<arg name="vcam" default="/dev/video3"/>
+		<include file="$(find cm_bridge)/launch/cm_camera.launch">
+			<arg name="width" value="$(arg width)"/>
+			<arg name="height" value="$(arg height)"/>
+			<arg name="desired_fps" value="$(arg desired_fps)"/>
+			<arg name="publish_rate" value="$(arg publish_rate)"/>
+			<arg name="vcam" value="$(arg vcam)"/>
+		</include>
+	</group>
 </launch>
