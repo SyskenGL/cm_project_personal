@@ -45,7 +45,8 @@ class QueuedActionServer:
         return self.__action_server.ActionResultType()
 
     def publish_feedback(self, feedback):
-        self.__current_goal.publish_feedback(feedback)
+        with self.__goal_lock:
+            self.__current_goal.publish_feedback(feedback)
 
     def set_succeeded(self, result=None, text=""):
         with self.__goal_lock:
