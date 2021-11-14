@@ -21,9 +21,6 @@ class QueuedActionServer:
             name, action, self.__internal_goal_cb, auto_start=auto_start
         )
 
-    def __del__(self):
-        self.__goals_queue.task_done()
-
     def __loop(self):
         loop_duration = rospy.Duration.from_sec(0.1)
         while not rospy.is_shutdown():
