@@ -16,18 +16,32 @@ def pack_status_request():
     return "#R:[{id}|\n"
 
 
-def pack_touch_sensors_request(enabled):
-    return "#T:{enabled}".format(enabled=int(enabled)) + "[{id}|\n"
-
-
-def pack_ir_sensors_request(barrier):
-    return "#O:{barrier}".format(barrier=int(barrier)) + "[{id}|\n"
+def pack_leds_request(flash, left_led, right_led):
+    return "#L:{on},{intensity},".format(
+        on=int(flash.on), intensity=flash.intensity
+    ) + "{on},{red},{green},{blue},{blink},".format(
+        on=int(left_led.on),
+        red=left_led.red, green=left_led.green, blue=left_led.blue,
+        blink=int(left_led.blink)
+    ) + "{on},{red},{green},{blue},{blink}".format(
+        on=int(right_led.on),
+        red=right_led.red, green=right_led.green, blue=right_led.blue,
+        blink=int(right_led.blink)
+    ) + "[{id}|\n"
 
 
 def pack_sound_sensors_request(enabled, auto_follow):
     return "#S:{enabled},{auto_follow}".format(
         enabled=int(enabled), auto_follow=int(auto_follow)
     ) + "[{id}|\n"
+
+
+def pack_ir_sensors_request(barrier):
+    return "#O:{barrier}".format(barrier=int(barrier)) + "[{id}|\n"
+
+
+def pack_touch_sensors_request(enabled):
+    return "#T:{enabled}".format(enabled=int(enabled)) + "[{id}|\n"
 
 
 def pack_display_request(face_code):

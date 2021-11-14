@@ -44,11 +44,16 @@ class CMDisplay(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_serial_response(assigned_id)
+                self.__wait_for_response(assigned_id)
             except FunctionTimedOut:
                 fatal = "Unable to get initial display info. Wait timed out."
                 rospy.logfatal(fatal)
                 rospy.signal_shutdown(fatal)
+
+    def __update_display_info(self, new_display_info):
+        if self.__display_info != new_display_info:
+            self.__display_info = new_display_info
+            self.__pub_display_info.publish(self.__display_info)
 
     def __on_display_server_called(self, request):
         succeed = True
@@ -56,7 +61,7 @@ class CMDisplay(CMNode):
         if self.__is_request_ignorable(request):
 
             self.__serial_client.send_goal(
-                WriteOnSerialGoal(message=pack_display_request(request.barrier))
+                WriteOnSerialGoal(message=pack_display_request(request.face_code))
             )
             self.__serial_client.wait_for_result()
             assigned_id = self.__serial_client.get_result()
@@ -65,7 +70,7 @@ class CMDisplay(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_serial_response(assigned_id)
+                    self.__wait_for_response(assigned_id)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -79,7 +84,7 @@ class CMDisplay(CMNode):
         return request.face_code == self.__display_info.face_code
 
     @func_set_timeout(10)
-    def __wait_for_serial_response(self, assigned_id):
+    def __wait_for_response(self, assigned_id):
         while not rospy.is_shutdown():
             response = rospy.wait_for_message(
                 "/cm_bridge/cm_low_level/response",
@@ -88,11 +93,6 @@ class CMDisplay(CMNode):
             if assigned_id == response.id:
                 new_display_info = response.robot_info.display_info
                 self.__update_display_info(new_display_info)
-
-    def __update_display_info(self, new_display_info):
-        if self.__display_info != new_display_info:
-            self.__display_info = new_display_info
-            self.__pub_display_info.publish(self.__display_info)
 
     def run(self):
         self.__display_server.start()

@@ -45,11 +45,20 @@ class CMSoundSensors(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_serial_response(assigned_id)
+                self.__wait_for_response(assigned_id)
             except FunctionTimedOut:
                 fatal = "Unable to get initial sound sensors info. Wait timed out."
                 rospy.logfatal(fatal)
                 rospy.signal_shutdown(fatal)
+
+    def __update_sound_sensors_info(self, new_sound_sensors_info):
+        if self.__sound_sensors_info != new_sound_sensors_info:
+            self.__sound_sensors_info = new_sound_sensors_info
+            self.__pub_sound_sensors_info.publish(self.__sound_sensors_info)
+
+    def __on_event_published(self, event):
+        new_sound_sensors_info = event.robot_info.sound_sensors_info
+        self.__update_sound_sensors_info(new_sound_sensors_info)
 
     def __on_sound_sensors_server_called(self, request):
         succeed = True
@@ -70,7 +79,7 @@ class CMSoundSensors(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_serial_response(assigned_id)
+                    self.__wait_for_response(assigned_id)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -87,7 +96,7 @@ class CMSoundSensors(CMNode):
         )
 
     @func_set_timeout(10)
-    def __wait_for_serial_response(self, assigned_id):
+    def __wait_for_response(self, assigned_id):
         while not rospy.is_shutdown():
             response = rospy.wait_for_message(
                 "/cm_bridge/cm_low_level/response",
@@ -96,15 +105,6 @@ class CMSoundSensors(CMNode):
             if assigned_id == response.id:
                 new_sound_sensors_info = response.robot_info.sound_sensors_info
                 self.__update_sound_sensors_info(new_sound_sensors_info)
-
-    def __on_event_published(self, event):
-        new_sound_sensors_info = event.robot_info.sound_sensors_info
-        self.__update_sound_sensors_info(new_sound_sensors_info)
-
-    def __update_sound_sensors_info(self, new_sound_sensors_info):
-        if self.__sound_sensors_info != new_sound_sensors_info:
-            self.__sound_sensors_info = new_sound_sensors_info
-            self.__pub_sound_sensors_info.publish(self.__sound_sensors_info)
 
     def run(self):
         self.__sub_event = rospy.Subscriber(

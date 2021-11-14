@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="cm_bridge" name="cm_leds" type="cm_leds.py" required="true" output="screen"/>
+</launch>
