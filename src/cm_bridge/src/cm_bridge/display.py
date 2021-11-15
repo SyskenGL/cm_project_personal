@@ -44,7 +44,9 @@ class CMDisplay(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_response(assigned_id)
+                response = self.__wait_for_response(assigned_id)
+                new_display_info = response.robot_info.display_info
+                self.__update_display_info(new_display_info)
             except FunctionTimedOut:
                 fatal = "Unable to get initial display info. Wait timed out."
                 rospy.logfatal(fatal)
@@ -70,7 +72,9 @@ class CMDisplay(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_response(assigned_id)
+                    response = self.__wait_for_response(assigned_id)
+                    new_display_info = response.robot_info.display_info
+                    self.__update_display_info(new_display_info)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -91,8 +95,7 @@ class CMDisplay(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                new_display_info = response.robot_info.display_info
-                self.__update_display_info(new_display_info)
+                return response
 
     def run(self):
         self.__display_server.start()

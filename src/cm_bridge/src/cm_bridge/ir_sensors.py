@@ -45,7 +45,9 @@ class CMIRSensors(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_response(assigned_id)
+                response = self.__wait_for_response(assigned_id)
+                new_ir_sensors_info = response.robot_info.ir_sensors_info
+                self.__update_ir_sensors_info(new_ir_sensors_info)
             except FunctionTimedOut:
                 fatal = "Unable to get initial IR sensors info. Wait timed out."
                 rospy.logfatal(fatal)
@@ -75,7 +77,9 @@ class CMIRSensors(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_response(assigned_id)
+                    response = self.__wait_for_response(assigned_id)
+                    new_ir_sensors_info = response.robot_info.ir_sensors_info
+                    self.__update_ir_sensors_info(new_ir_sensors_info)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -96,8 +100,7 @@ class CMIRSensors(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                new_ir_sensors_info = response.robot_info.ir_sensors_info
-                self.__update_ir_sensors_info(new_ir_sensors_info)
+                return response
 
     def run(self):
         self.__sub_event = rospy.Subscriber(

@@ -44,7 +44,9 @@ class CMLEDs(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_response(assigned_id)
+                response = self.__wait_for_response(assigned_id)
+                new_leds_info = response.robot_info.leds_info
+                self.__update_leds_info(new_leds_info)
             except FunctionTimedOut:
                 fatal = "Unable to get initial leds info. Wait timed out."
                 rospy.logfatal(fatal)
@@ -74,7 +76,9 @@ class CMLEDs(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_response(assigned_id)
+                    response = self.__wait_for_response(assigned_id)
+                    new_leds_info = response.robot_info.leds_info
+                    self.__update_leds_info(new_leds_info)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -99,8 +103,7 @@ class CMLEDs(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                new_leds_info = response.robot_info.leds_info
-                self.__update_leds_info(new_leds_info)
+                return response
 
     def run(self):
         self.__leds_server.start()

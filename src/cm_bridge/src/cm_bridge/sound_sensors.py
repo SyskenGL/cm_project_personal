@@ -45,7 +45,9 @@ class CMSoundSensors(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_response(assigned_id)
+                response = self.__wait_for_response(assigned_id)
+                new_sound_sensors_info = response.robot_info.sound_sensors_info
+                self.__update_sound_sensors_info(new_sound_sensors_info)
             except FunctionTimedOut:
                 fatal = "Unable to get initial sound sensors info. Wait timed out."
                 rospy.logfatal(fatal)
@@ -79,7 +81,9 @@ class CMSoundSensors(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_response(assigned_id)
+                    response = self.__wait_for_response(assigned_id)
+                    new_sound_sensors_info = response.robot_info.sound_sensors_info
+                    self.__update_sound_sensors_info(new_sound_sensors_info)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -103,8 +107,7 @@ class CMSoundSensors(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                new_sound_sensors_info = response.robot_info.sound_sensors_info
-                self.__update_sound_sensors_info(new_sound_sensors_info)
+                return response
 
     def run(self):
         self.__sub_event = rospy.Subscriber(

@@ -45,7 +45,9 @@ class CMTouchSensors(CMNode):
             rospy.signal_shutdown(fatal)
         else:
             try:
-                self.__wait_for_response(assigned_id)
+                response = self.__wait_for_response(assigned_id)
+                new_touch_sensors_info = response.robot_info.touch_sensors_info
+                self.__update_touch_sensors_info(new_touch_sensors_info)
             except FunctionTimedOut:
                 fatal = "Unable to get initial touch sensors info. Wait timed out."
                 rospy.logfatal(fatal)
@@ -75,7 +77,9 @@ class CMTouchSensors(CMNode):
                 succeed = False
             else:
                 try:
-                    self.__wait_for_response(assigned_id)
+                    response = self.__wait_for_response(assigned_id)
+                    new_touch_sensors_info = response.robot_info.touch_sensors_info
+                    self.__update_touch_sensors_info(new_touch_sensors_info)
                 except FunctionTimedOut:
                     rospy.logwarn("No response received. Wait timed out.")
                     succeed = False
@@ -96,8 +100,7 @@ class CMTouchSensors(CMNode):
                 Response,
             )
             if assigned_id == response.id:
-                new_touch_sensors_info = response.robot_info.touch_sensors_info
-                self.__update_touch_sensors_info(new_touch_sensors_info)
+                return response
 
     def run(self):
         self.__sub_event = rospy.Subscriber(

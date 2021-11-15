@@ -50,7 +50,7 @@ def pack_display_request(face_code):
 
 def unpack_response_id(msg):
     response_id = None
-    regex_result = re.search(r"\[\d\|", msg)
+    regex_result = re.search("\[\d\|", msg)
     if regex_result:
         response_id = int(regex_result.group()[1:-1])
     return response_id
@@ -58,7 +58,7 @@ def unpack_response_id(msg):
 
 def unpack_motors_info(msg):
     motors_info = None
-    regex_result = re.search("M:(. ?)\|", msg)
+    regex_result = re.search("M:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         motors_info = MotorsInfo(
@@ -74,7 +74,7 @@ def unpack_motors_info(msg):
 
 def unpack_leds_info(msg):
     leds_info = None
-    regex_result = re.search("L:(. ?)\|", msg)
+    regex_result = re.search("L:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         leds_info = LEDsInfo(
@@ -99,7 +99,7 @@ def unpack_leds_info(msg):
 
 def unpack_sound_sensors_info(msg):
     sound_sensors_info = None
-    regex_result = re.search("S:(. ?)\|", msg)
+    regex_result = re.search("S:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         sound_sensors_info = SoundSensorsInfo(
@@ -119,7 +119,7 @@ def unpack_sound_sensors_info(msg):
 
 def unpack_ir_sensors_info(msg):
     ir_sensors_info = None
-    regex_result = re.search("O:(. ?)\|", msg)
+    regex_result = re.search("O:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         ir_sensors_info = IRSensorsInfo(
@@ -135,7 +135,7 @@ def unpack_ir_sensors_info(msg):
 
 def unpack_touch_sensors_info(msg):
     touch_sensors_info = None
-    regex_result = re.search("T:(. ?)\|", msg)
+    regex_result = re.search("T:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         touch_sensors_info = TouchSensorsInfo(
@@ -149,8 +149,8 @@ def unpack_touch_sensors_info(msg):
 
 def unpack_display_info(msg):
     display_info = None
-    msg = re.sub("\[(. ?)\|", "|", msg)
-    regex_result = re.search("V:(. ?)\|", msg)
+    msg = re.sub("\[(.*?)\|", "|", msg)
+    regex_result = re.search("V:(.*?)\|", msg)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         display_info = DisplayInfo(face_code=values[0])
