@@ -50,7 +50,7 @@ def pack_display_request(face_code):
 
 def unpack_response_id(msg):
     response_id = None
-    regex_result = re.search(r"\[\d \|", msg)
+    regex_result = re.search(r"\[\d\|", msg)
     if regex_result:
         response_id = int(regex_result.group()[1:-1])
     return response_id
@@ -218,7 +218,7 @@ class CMLowLevel(CMNode):
         while not rospy.is_shutdown():
             if msg := str(self.__serial.readline(), "utf-8"):
                 if msg[0] == "#":
-                    if response_id := unpack_response_id(msg) is not None:
+                    if response_id := unpack_response_id(msg):
                         self.__pub_response.publish(
                             Response(id=response_id, robot_info=unpack_robot_info(msg))
                         )
