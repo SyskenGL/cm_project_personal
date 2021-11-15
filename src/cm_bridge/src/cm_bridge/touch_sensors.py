@@ -65,7 +65,7 @@ class CMTouchSensors(CMNode):
     def __on_touch_sensors_server_called(self, request):
         succeed = True
 
-        if self.__is_request_ignorable(request):
+        if not self.__is_request_ignorable(request):
 
             self.__serial_client.send_goal(
                 WriteOnSerialGoal(message=pack_touch_sensors_request(request.enabled))
