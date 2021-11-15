@@ -55,7 +55,9 @@ class CMCamera(CMNode):
         rospy.logdebug("Actual height: %s", self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         self.__vcam = pyfakewebcam.FakeWebcam(
-            self.__config["vcam"], self.__config["width"], self.__config["height"]
+            self.__config["vcam"], 
+            self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH), 
+            self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         )
 
     def __close_camera(self):
