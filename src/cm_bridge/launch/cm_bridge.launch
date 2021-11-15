@@ -12,6 +12,8 @@
 			<arg name="read_timeout" value="$(arg read_timeout)"/>
 			<arg name="write_timeout" value="$(arg write_timeout)"/>
 		</include>
+		<!-- cm_leds NODE -->
+		<include file="$(find cm_bridge)/launch/cm_leds.launch"/>
 		<!-- cm_touch_sensors NODE -->
 		<include file="$(find cm_bridge)/launch/cm_touch_sensors.launch"/>
 		<!-- cm_ir_sensors NODE -->
