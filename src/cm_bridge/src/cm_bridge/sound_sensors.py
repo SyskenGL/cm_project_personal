@@ -20,14 +20,14 @@ class CMSoundSensors(CMNode):
         self.__sub_event = None
 
         self.__sound_sensors_server = QueuedActionServer(
-            "~sound_sensors_server",
+            "~server",
             SetSoundSensorsAction,
             execute_cb=self.__on_sound_sensors_server_called,
             auto_start=False,
         )
 
         self.__serial_client = actionlib.SimpleActionClient(
-            "/cm_bridge/cm_low_level/serial_server", WriteOnSerialAction
+            "/cm_bridge/cm_low_level/server", WriteOnSerialAction
         )
         self.__serial_client.wait_for_server()
 

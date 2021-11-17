@@ -48,17 +48,17 @@ def pack_display_request(face_code):
     return "#V:{face_code}".format(face_code=int(face_code)) + "[{id}|\n"
 
 
-def unpack_response_id(msg):
+def unpack_response_id(message):
     response_id = None
-    regex_result = re.search("\[\d\|", msg)
+    regex_result = re.search("\[\d\|", message)
     if regex_result:
         response_id = int(regex_result.group()[1:-1])
     return response_id
 
 
-def unpack_motors_info(msg):
+def unpack_motors_info(message):
     motors_info = None
-    regex_result = re.search("M:(.*?)\|", msg)
+    regex_result = re.search("M:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         motors_info = MotorsInfo(
@@ -72,9 +72,9 @@ def unpack_motors_info(msg):
     return motors_info
 
 
-def unpack_leds_info(msg):
+def unpack_leds_info(message):
     leds_info = None
-    regex_result = re.search("L:(.*?)\|", msg)
+    regex_result = re.search("L:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         leds_info = LEDsInfo(
@@ -97,9 +97,9 @@ def unpack_leds_info(msg):
     return leds_info
 
 
-def unpack_sound_sensors_info(msg):
+def unpack_sound_sensors_info(message):
     sound_sensors_info = None
-    regex_result = re.search("S:(.*?)\|", msg)
+    regex_result = re.search("S:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         sound_sensors_info = SoundSensorsInfo(
@@ -117,9 +117,9 @@ def unpack_sound_sensors_info(msg):
     return sound_sensors_info
 
 
-def unpack_ir_sensors_info(msg):
+def unpack_ir_sensors_info(message):
     ir_sensors_info = None
-    regex_result = re.search("O:(.*?)\|", msg)
+    regex_result = re.search("O:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         ir_sensors_info = IRSensorsInfo(
@@ -133,9 +133,9 @@ def unpack_ir_sensors_info(msg):
     return ir_sensors_info
 
 
-def unpack_touch_sensors_info(msg):
+def unpack_touch_sensors_info(message):
     touch_sensors_info = None
-    regex_result = re.search("T:(.*?)\|", msg)
+    regex_result = re.search("T:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         touch_sensors_info = TouchSensorsInfo(
@@ -147,24 +147,24 @@ def unpack_touch_sensors_info(msg):
     return touch_sensors_info
 
 
-def unpack_display_info(msg):
+def unpack_display_info(message):
     display_info = None
-    msg = re.sub("\[(.*?)\|", "|", msg)
-    regex_result = re.search("V:(.*?)\|", msg)
+    message = re.sub("\[(.*?)\|", "|", message)
+    regex_result = re.search("V:(.*?)\|", message)
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         display_info = DisplayInfo(face_code=values[0])
     return display_info
 
 
-def unpack_robot_info(msg):
+def unpack_robot_info(message):
     return RobotInfo(
-        motors_info=unpack_motors_info(msg),
-        leds_info=unpack_leds_info(msg),
-        sound_sensors_info=unpack_sound_sensors_info(msg),
-        ir_sensors_info=unpack_ir_sensors_info(msg),
-        touch_sensors_info=unpack_touch_sensors_info(msg),
-        display_info=unpack_display_info(msg),
+        motors_info=unpack_motors_info(message),
+        leds_info=unpack_leds_info(message),
+        sound_sensors_info=unpack_sound_sensors_info(message),
+        ir_sensors_info=unpack_ir_sensors_info(message),
+        touch_sensors_info=unpack_touch_sensors_info(message),
+        display_info=unpack_display_info(message),
     )
 
 
@@ -186,7 +186,7 @@ class CMLowLevel(CMNode):
 
         self.__serial_write_id = 0
         self.__serial_server = QueuedActionServer(
-            "~serial_server",
+            "~server",
             WriteOnSerialAction,
             self.__on_serial_server_called,
             auto_start=False,
@@ -216,18 +216,21 @@ class CMLowLevel(CMNode):
 
     def __listen_serial(self):
         while not rospy.is_shutdown():
-            if msg := str(self.__serial.readline(), "utf-8"):
-                if msg[0] == "#":
-                    if response_id := unpack_response_id(msg):
+            if message := str(self.__serial.readline(), "utf-8"):
+                if message[0] == "#":
+                    if response_id := unpack_response_id(message):
                         self.__pub_response.publish(
-                            Response(id=response_id, robot_info=unpack_robot_info(msg))
+                            Response(
+                                id=response_id,
+                                robot_info=unpack_robot_info(message)
+                            )
                         )
                     else:
                         self.__pub_event.publish(
-                            Event(robot_info=unpack_robot_info(msg))
+                            Event(robot_info=unpack_robot_info(message))
                         )
                 else:
-                    rospy.logdebug("Debug info from serial: %s", msg)
+                    rospy.logdebug("Debug info from serial: %s", message)
         self.__close_serial()
 
     def __on_serial_server_called(self, request):

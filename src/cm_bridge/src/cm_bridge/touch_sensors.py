@@ -20,14 +20,14 @@ class CMTouchSensors(CMNode):
         self.__sub_event = None
 
         self.__touch_sensors_server = QueuedActionServer(
-            "~touch_sensors_server",
+            "~server",
             SetTouchSensorsAction,
             execute_cb=self.__on_touch_sensors_server_called,
             auto_start=False,
         )
 
         self.__serial_client = actionlib.SimpleActionClient(
-            "/cm_bridge/cm_low_level/serial_server", WriteOnSerialAction
+            "/cm_bridge/cm_low_level/server", WriteOnSerialAction
         )
         self.__serial_client.wait_for_server()
 
