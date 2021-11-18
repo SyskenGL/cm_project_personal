@@ -6,7 +6,7 @@ import actionlib
 from actionlib.server_goal_handle import ServerGoalHandle
 
 
-class QueuedActionServer:
+class QueuedSimpleActionServer:
 
     def __init__(self, name, action, execute_cb, auto_start=False):
         self.__goals_queue = queue.Queue()

@@ -2,7 +2,7 @@
 import rospy
 import actionlib
 from cm_ros.wrapper import CMNode
-from cm_ros.queued_action_server import QueuedActionServer
+from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_sound_sensors_request, pack_status_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
@@ -19,7 +19,7 @@ class CMSoundSensors(CMNode):
         )
         self.__sub_event = None
 
-        self.__sound_sensors_server = QueuedActionServer(
+        self.__sound_sensors_server = QueuedSimpleActionServer(
             "~server",
             SetSoundSensorsAction,
             execute_cb=self.__on_sound_sensors_server_called,

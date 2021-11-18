@@ -2,7 +2,7 @@
 import rospy
 import actionlib
 from cm_ros.wrapper import CMNode
-from cm_ros.queued_action_server import QueuedActionServer
+from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_display_request, pack_status_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
@@ -18,7 +18,7 @@ class CMDisplay(CMNode):
             "~info", DisplayInfo, queue_size=5, latch=True
         )
 
-        self.__display_server = QueuedActionServer(
+        self.__display_server = QueuedSimpleActionServer(
             "~server",
             SetDisplayAction,
             execute_cb=self.__on_display_server_called,

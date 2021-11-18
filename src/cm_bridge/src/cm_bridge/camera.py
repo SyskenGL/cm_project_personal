@@ -56,8 +56,8 @@ class CMCamera(CMNode):
 
         self.__vcam = pyfakewebcam.FakeWebcam(
             self.__config["vcam"], 
-            self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH), 
-            self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            int(self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+            int(self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         )
 
     def __close_camera(self):

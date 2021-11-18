@@ -2,7 +2,7 @@
 import rospy
 import actionlib
 from cm_ros.wrapper import CMNode
-from cm_ros.queued_action_server import QueuedActionServer
+from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_touch_sensors_request, pack_status_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
@@ -19,7 +19,7 @@ class CMTouchSensors(CMNode):
         )
         self.__sub_event = None
 
-        self.__touch_sensors_server = QueuedActionServer(
+        self.__touch_sensors_server = QueuedSimpleActionServer(
             "~server",
             SetTouchSensorsAction,
             execute_cb=self.__on_touch_sensors_server_called,

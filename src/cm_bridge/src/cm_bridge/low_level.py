@@ -4,7 +4,7 @@ import rospy
 import serial
 from collections import defaultdict
 from cm_ros.wrapper import CMNode
-from cm_ros.queued_action_server import QueuedActionServer
+from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from cm_msgs.msg import LED, Flash, Motor
 from cm_msgs.msg import Event, Response
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialResult
@@ -185,7 +185,7 @@ class CMLowLevel(CMNode):
         )
 
         self.__serial_write_id = 0
-        self.__serial_server = QueuedActionServer(
+        self.__serial_server = QueuedSimpleActionServer(
             "~server",
             WriteOnSerialAction,
             self.__on_serial_server_called,

@@ -2,7 +2,7 @@
 import rospy
 import actionlib
 from cm_ros.wrapper import CMNode
-from cm_ros.queued_action_server import QueuedActionServer
+from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_leds_request, pack_status_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
@@ -18,7 +18,7 @@ class CMLEDs(CMNode):
             "~info", LEDsInfo, queue_size=5, latch=True
         )
 
-        self.__leds_server = QueuedActionServer(
+        self.__leds_server = QueuedSimpleActionServer(
             "~server",
             SetLEDsAction,
             execute_cb=self.__on_leds_server_called,
