@@ -11,7 +11,7 @@ class QueuedSimpleActionServer:
     def __init__(self, name, action, execute_cb, auto_start=False):
         self.__goals_queue = queue.Queue()
         self.__current_goal = ServerGoalHandle()
-        self.__goal_lock = threading.Lock()
+        self.__lock = threading.Lock()
 
         self.__execute_cb = execute_cb
         self.__loop_thread = threading.Thread(target=self.__loop)
@@ -26,7 +26,7 @@ class QueuedSimpleActionServer:
         while not rospy.is_shutdown():
             try:
                 new_goal = self.__goals_queue.get_nowait()
-                with self.__goal_lock:
+                with self.__action_server.lock, self.__lock:
                     self.__current_goal = new_goal
                     self.__current_goal.set_accepted()
                 self.__execute_cb(new_goal.get_goal())
@@ -41,19 +41,19 @@ class QueuedSimpleActionServer:
         return self.__action_server.ActionResultType()
 
     def publish_feedback(self, feedback):
-        with self.__goal_lock:
+        with self.__action_server.lock, self.__lock:
             self.__current_goal.publish_feedback(feedback)
 
     def set_succeeded(self, result=None, text=""):
-        with self.__goal_lock:
-            if not result:
-                result = self.get_default_result()
+        if not result:
+            result = self.get_default_result()
+        with self.__action_server.lock, self.__lock:
             self.__current_goal.set_succeeded(result, text)
 
     def set_aborted(self, result=None, text=""):
-        with self.__goal_lock:
-            if not result:
-                result = self.get_default_result()
+        if not result:
+            result = self.get_default_result()
+        with self.__action_server.lock, self.__lock:
             self.__current_goal.set_aborted(result, text)
 
     def start(self):
