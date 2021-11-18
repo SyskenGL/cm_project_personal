@@ -49,7 +49,6 @@ class QueuedSimpleActionServer:
             if not result:
                 result = self.get_default_result()
             self.__current_goal.set_succeeded(result, text)
-            print("wsdfojhweoijhgoiewogweg" + str(result))
 
     def set_aborted(self, result=None, text=""):
         with self.__goal_lock:
