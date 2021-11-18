@@ -22,18 +22,17 @@ class QueuedSimpleActionServer:
         )
 
     def __loop(self):
-        loop_duration = rospy.Duration.from_sec(0.1)
+        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
-                new_goal = self.__goals_queue.get(
-                    block=True, timeout=loop_duration.to_sec()
-                )
+                new_goal = self.__goals_queue.get_nowait()
                 with self.__goal_lock:
                     self.__current_goal = new_goal
                     self.__current_goal.set_accepted()
                 self.__execute_cb(new_goal.get_goal())
             except queue.Empty:
                 pass
+            rate.sleep()
 
     def __internal_goal_cb(self, goal):
         self.__goals_queue.put(goal)
@@ -50,6 +49,7 @@ class QueuedSimpleActionServer:
             if not result:
                 result = self.get_default_result()
             self.__current_goal.set_succeeded(result, text)
+            print("wsdfojhweoijhgoiewogweg" + str(result))
 
     def set_aborted(self, result=None, text=""):
         with self.__goal_lock:
