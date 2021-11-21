@@ -7,7 +7,7 @@ from cm_ros.queued_simple_action_server import QueuedSimpleActionServer
 from func_timeout import func_set_timeout, FunctionTimedOut
 from cm_bridge.low_level import pack_motors_request, pack_status_request
 from cm_msgs.msg import WriteOnSerialAction, WriteOnSerialGoal
-from cm_msgs.msg import Response, Event, Motor, MotorsInfo, SetMotorsAction
+from cm_msgs.msg import Response, Event, MotorsInfo, SetMotorsAction
 
 
 class CMMotors(CMNode):
