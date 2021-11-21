@@ -22,6 +22,8 @@
 		<include file="$(find cm_bridge)/launch/cm_sound_sensors.launch"/>
 		<!-- cm_display NODE -->
 		<include file="$(find cm_bridge)/launch/cm_display.launch"/>
+		<!-- cm_motors NODE -->
+		<include file="$(find cm_bridge)/launch/cm_motors.launch"/>
 		<!-- cm_microphone NODE -->
 		<arg name="format" default="1"/>
 		<arg name="channels" default="2"/>

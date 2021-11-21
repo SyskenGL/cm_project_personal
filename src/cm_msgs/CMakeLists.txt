@@ -52,6 +52,7 @@ add_action_files(
   DIRECTORY action/bridge
   FILES
   WriteOnSerial.action
+  SetMotors.action
   SetTouchSensors.action
   SetSoundSensors.action
   SetIRSensors.action

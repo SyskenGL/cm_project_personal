@@ -59,8 +59,7 @@ class CMIRSensors(CMNode):
             self.__pub_ir_sensors_info.publish(self.__ir_sensors_info)
 
     def __on_event_published(self, event):
-        new_ir_sensors_info = event.robot_info.ir_sensors_info
-        self.__update_ir_sensors_info(new_ir_sensors_info)
+        self.__update_ir_sensors_info(event.robot_info.ir_sensors_info)
 
     def __on_ir_sensors_server_called(self, request):
         succeed = True

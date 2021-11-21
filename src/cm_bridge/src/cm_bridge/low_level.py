@@ -16,6 +16,22 @@ def pack_status_request():
     return "#R:[{id}|\n"
 
 
+def pack_motors_request(motors):
+    return "#M:{m0_angle},{m0_speed},".format(
+        m0_angle=motors[0].angle, m0_speed=motors[0].speed
+    ) + "{m1_angle},{m1_speed},".format(
+        m1_angle=motors[1].angle, m1_speed=motors[1].speed
+    ) + "{m2_angle},{m2_speed},".format(
+        m2_angle=motors[2].angle, m2_speed=motors[2].speed
+    ) + "{m3_angle},{m3_speed},".format(
+        m3_angle=motors[3].angle, m3_speed=motors[3].speed
+    ) + "{m4_angle},{m4_speed},".format(
+        m4_angle=motors[4].angle, m4_speed=motors[4].speed
+    ) + "{m5_angle},{m5_speed}".format(
+        m5_angle=motors[5].angle, m5_speed=motors[5].speed
+    ) + "[{id}|\n"
+
+
 def pack_leds_request(flash, left_led, right_led):
     return "#L:{on},{intensity},".format(
         on=int(flash.on), intensity=flash.intensity
@@ -62,12 +78,12 @@ def unpack_motors_info(message):
     if regex_result:
         values = [int(value) for value in regex_result.group(1).split(",")]
         motors_info = MotorsInfo(
-            motor_0=Motor(angle=values[0], speed=None),
-            motor_1=Motor(angle=values[1], speed=None),
-            motor_2=Motor(angle=values[2], speed=None),
-            motor_3=Motor(angle=values[3], speed=None),
-            motor_4=Motor(angle=values[4], speed=None),
-            motor_5=Motor(angle=values[5], speed=None),
+            m0=Motor(angle=values[0], speed=None),
+            m1=Motor(angle=values[1], speed=None),
+            m2=Motor(angle=values[2], speed=None),
+            m3=Motor(angle=values[3], speed=None),
+            m4=Motor(angle=values[4], speed=None),
+            m5=Motor(angle=values[5], speed=None),
         )
     return motors_info
 
@@ -128,7 +144,7 @@ def unpack_ir_sensors_info(message):
             rear_distance=values[2],
             right_distance=values[3],
             left_distance=values[4],
-            violation_detected=bool(values[5]),
+            violation=bool(values[5]),
         )
     return ir_sensors_info
 

@@ -59,8 +59,7 @@ class CMTouchSensors(CMNode):
             self.__pub_touch_sensors_info.publish(self.__touch_sensors_info)
 
     def __on_event_published(self, event):
-        new_touch_sensors_info = event.robot_info.touch_sensors_info
-        self.__update_touch_sensors_info(new_touch_sensors_info)
+        self.__update_touch_sensors_info(event.robot_info.touch_sensors_info)
 
     def __on_touch_sensors_server_called(self, request):
         succeed = True
